@@ -97,3 +97,32 @@
       }
     }
   }*/
+  
+  
+  //https://www.nti-audio.com/en/support/know-how/fast-fourier-transform-fft#:~:text=Strictly%20speaking%2C%20the%20FFT%20is,divided%20into%20its%20frequency%20components.&text=Over%20the%20time%20period%20measured,contains%203%20distinct%20dominant%20frequencies.
+/*void getFFTSpectrumValues() {
+  fft = new FFT(player.bufferSize(), player.sampleRate());
+  fft.forward(player.mix);
+  
+  float[] spectrumReal = new float[fft.specSize()];
+  float[] spectrumImag = new float[fft.specSize()];
+  spectrumReal = fft.getSpectrumReal();
+  spectrumImag = fft.getSpectrumImaginary();
+  saveStrings("spectrumReal.txt", getStringArray(spectrumReal));
+  saveStrings("spectrumImag.txt", getStringArray(spectrumImag));
+  
+  
+  for (int i = 0; i < fft.specSize(); i++)
+  {
+    positionArray[pos] = player.position();
+    pos++;
+    if (fft.getBand(i) > fft.getBand(maxBand)) maxBand = i;
+  }
+  sampleSpectrum[spectrumPos] = maxBand;
+  spectrumPos++;
+  maxBand = 0;
+  if (spectrumPos == 1024) {
+    spectrumPos = 0;
+    FFTcomplete = true;
+  }
+}*/
