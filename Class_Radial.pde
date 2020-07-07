@@ -6,10 +6,10 @@ class Radial {
 
   // constant value of the number of points to reduce a sound file to
   final int maxArraySize = 720;
-
+  
+  PApplet app;
   Minim radialMinim;
   AudioPlayer sound;
-  AudioSample tempSample;
   int posX, posY, fileType;
   String name, fileName, filePath;
   float[] sampleArray, frequencyArray;
@@ -21,26 +21,26 @@ class Radial {
    * @param posx:      x position of center of radial
    * @param posy:      y position of center of radial
    */
-  Radial(PApplet p, String Name, String FileName, int FileType, int posx, int posy) {
-    minim = new Minim(p);
-    name = Name;
-    fileName = FileName;
-    fileType = FileType;
-    filePath = ""; //NEED TO CHANGE
+  Radial(PApplet app_, String name_, String fileName_, int fileType_, int posx_, int posy_) {
+    app = app_;
+    radialMinim = new Minim(app);
+    name = name_;
+    fileName = fileName_;
+    fileType = fileType_;
+    filePath = ""; //NEED TO CHANGE  
     if (!checkForArrayFile(fileName)) {
-      createArrayFile(createSampleArray(FileName, 2048), fileName);
-      createArrayFile(createFrequencyArray(FileName), fileName);
+      createArrayFile(createSampleArray(), "s_");
+      createArrayFile(createFrequencyArray(fileName), "f_");
     }
-    sampleArray = createArrayFromFile(filePath);
-    frequencyArray = createArrayFromFile(filePath);
-    posX = posx;
-    posY = posy;
-    if (fileType == MP3) {
-       sound = minim.loadFile(fileName + ".mp3");
+    sampleArray = createArrayFromFile("s_");
+    frequencyArray = createArrayFromFile("f_");
+    posX = posx_;
+    posY = posy_;
+    if (fileType == MP3) { 
+      sound = radialMinim.loadFile(fileName + ".mp3");
     } else {
-      sound = minim.loadFile(fileName + ".wav");
+      sound = radialMinim.loadFile(fileName + ".wav");
     }
-    
   }
 
   boolean checkForArrayFile(String filePath) {
@@ -54,9 +54,9 @@ class Radial {
    * @param array[]:   float array to be written to the file
    * @param filePath:  path of the file being written to (starting in the skecth folder)
    */
-  void createArrayFile(float[] array, String filePath) {
-    println("Creating array file at:\t" + sketchPath() + "data\\" + fileName + ".txt");
-    PrintWriter output = createWriter("data\\" + fileName + ".txt");
+  void createArrayFile(float[] array, String filePrefix) {
+    println("Creating array file at:\t" + sketchPath() + "data\\" + filePrefix + fileName + ".txt");
+    PrintWriter output = createWriter("data\\" + filePrefix + fileName + ".txt");
     for (int i = 0; i < array.length; i++) {
       output.println(array[i]);
     }
@@ -68,12 +68,12 @@ class Radial {
    *
    * @param filePath:  path of the file being written to (starting in the data folder)
    */
-  float[] createArrayFromFile(String filePath) {
-    println("Creating array from file at:\t" + sketchPath() + "data\\" + fileName + ".txt");
+  float[] createArrayFromFile(String filePrefix) {
+    println("Creating array from file at:\t" + sketchPath() + "data\\" + filePrefix + fileName + ".txt");
     float[] returnArray = new float[maxArraySize];
 
     // read the data from the specified file and convert to float array
-    String[] fileData = loadStrings(fileName + ".txt");
+    String[] fileData = loadStrings(filePrefix + fileName + ".txt");
     for (int i = 0; i < fileData.length; i++) {
       returnArray[i] = float(fileData[i]);
     }
@@ -91,10 +91,10 @@ class Radial {
     float r, x, y;
     float arrayMin = floor(min(sampleArray));
     float arrayMax = ceil(max(sampleArray));
-    noFill();
-    stroke(0);
-    strokeWeight(2);
-    beginShape(); 
+    app.noFill();
+    app.stroke(0);
+    app.strokeWeight(2);
+    app.beginShape(); 
     
     for (int i = 0; i < displayPoints; i++) {
       // map the radius of the point between the max and min values of the file, 
@@ -105,29 +105,26 @@ class Radial {
       
       // if this is the first point, add an extra vertex handle
       if (i == 0) {
-        curveVertex(x, y);
+        app.curveVertex(x, y);
       }
       // if we are at the end, make the final point the same as the first point
       if (i == (displayPoints - 1)) {
         r = map(sampleArray[0], arrayMin, arrayMax, minRadialDisplay, maxRadialDisplay);
         x = posX + (r * cos(radians(-90)));
         y = posY + (r * sin(radians(-90)));
-        curveVertex(x, y);
+        app.curveVertex(x, y);
       }
-      curveVertex(x, y);
+      app.curveVertex(x, y);
     }
-    endShape();
+    app.endShape();
   }
 
-  /* method for reducing the samples in an mp3 or wav file to 720 values
-   *
-   * @param bufferSize:  desired buffer size of sample loading
-   */
-  float[] createSampleArray(String fileName, int bufferSize) {
+  // method for reducing the samples in an mp3 or wav file to 720 values
+  float[] createSampleArray() {
     float[] reducedSamples = new float[maxArraySize];
     println("Loading sample from:\t" + sketchPath() + "\\data\\" + fileName);
     // load in the audio file as a sample
-    
+    AudioSample tempSample;
     if (fileType == MP3) {     
       tempSample = radialMinim.loadSample(fileName + ".mp3");
     } else {
