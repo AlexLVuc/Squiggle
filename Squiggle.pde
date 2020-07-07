@@ -1,3 +1,4 @@
+import g4p_controls.*;
 import ddf.minim.*; 
 import ddf.minim.analysis.*; 
 Minim minim;  //Used for audio sampling
@@ -148,7 +149,8 @@ void printLoadedAudioSampleInfo(AudioSample file) {
   println("Number of Channels: ");
   println("Sample Rate of file: " + file.sampleRate() + " per second");
   println("Length of file: " + (file.length() / 1000.0) + " seconds");
-  println("Total number of Samples: " + round((file.sampleRate() * (file.length() / 1000.0))) + " samples\n");
+  println("Total number of Samples: " + round((file.sampleRate() * (file.length() / 1000.0))));
+  println("Number of channels: " + sample.type() + "\n");
 }
 
 void printLoadedAudioFileInfo(AudioPlayer file) {
