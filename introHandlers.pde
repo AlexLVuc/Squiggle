@@ -5,7 +5,14 @@
  */
 
 public void introWindowMouse(PApplet app, GWinData data, MouseEvent event) {
-  MyWinData introData = (MyWinData)data; 
+  MyWinData introData = (MyWinData)data;
+  
+  // once the mouse is released, make all Radial handles inactive
+  if (event.getAction() == MouseEvent.RELEASE) {
+    for (int i = 0; i < radials.length; i++) {
+      radials[i].releaseHandleEvent();
+    }
+  }  
 }
 
 public void introWindowKey(PApplet app, GWinData data, KeyEvent event) {
@@ -39,6 +46,8 @@ public void handleBtnClipboard (GButton button, GEvent event) {
 }
 
 public void handleBtnPlay (GButton button, GEvent event) {
+  //mainGUI();
+  //introWindow.close();
 }
 
 public void handleBtnBack (GButton button, GEvent event) {

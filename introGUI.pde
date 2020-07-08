@@ -6,20 +6,21 @@
 
 //This method initializes all elemts of the intro screen
 public void introGUI() {
-  //Load in logo png from data folder
+  //Load in logo png from data folder  
   logo = loadImage("Squiggle_Logo.png");
 
   // Bring in required fonts for intro window
-  Baskerville64 = getFont("BASKVILL.TTF", Font.PLAIN, 64);
-  Baskerville24 = getFont("BASKVILL.TTF", Font.PLAIN, 24);
-  Baskerville22 = getFont("BASKVILL.TTF", Font.PLAIN, 22);
-  Baskerville16 = getFont("BASKVILL.TTF", Font.PLAIN, 16);
+  Baskerville64 = getFont("fonts/BASKVILL.TTF", Font.PLAIN, 64);
+  Baskerville24 = getFont("fonts/BASKVILL.TTF", Font.PLAIN, 24);
+  Baskerville22 = getFont("fonts/BASKVILL.TTF", Font.PLAIN, 22);
+  Baskerville16 = getFont("fonts/BASKVILL.TTF", Font.PLAIN, 16);
 
   G4P.setCtrlMode(GControlMode.CORNER);  //Set dimensioning to x1, y1, w, h
   G4P.setGlobalColorScheme(9);  // Custom scheme
   
   //Setup for the intro window
   introWindow = GWindow.getWindow(this, "Intro Screen", ((width - windowWidth) / 2) , ((height - windowHeight) / 2), windowWidth, windowHeight, JAVA2D);
+  introWindow.setActionOnClose(G4P.EXIT_APP);
   introWindow.addDrawHandler(this, "introWindowDraw");
   introWindow.addMouseHandler(this, "introWindowMouse");
   introWindow.addKeyHandler(this, "introWindowKey");
@@ -27,7 +28,6 @@ public void introGUI() {
   ((MyWinData)introWindow.data).bJoin = false;
   ((MyWinData)introWindow.data).bCreate = false;
   ((MyWinData)introWindow.data).bTour = false;
-  //((MyWinData)introWindow.data).bHoveringClipboard = false;
   ((MyWinData)introWindow.data).sessionPassword = null;
 
   // Button declarations and handlers
@@ -82,7 +82,9 @@ public void introGUI() {
   nameLabel.setVisible(false);
   
   //Load in a sound file by passing the name of the mp3 file
-  shaker = new Radial(introWindow, "Shaker", "Shaker", MP3, width / 2, 800);
+  radials = new Radial[2];
+  radials[0] = new Radial(introWindow, "Shaker", "Shaker", MP3, width / 2, 800, radials);
+  radials[1] = new Radial(introWindow, "SquareBass", "SquareBass", MP3, width/4, 800, radials); 
 }
 
 /* default method for drawing to G4P intro window
@@ -92,22 +94,23 @@ public void introGUI() {
  */
 public void introWindowDraw(PApplet app, GWinData data) {
   MyWinData introData = (MyWinData)data;
-  introHeaderGUI(app, data);
-  introMainGUI(app, data);
-  shaker.display(720, 1);
-  
+  introHeaderGUI(app, data); 
 
   if (introData.bJoin) {
-    introHeaderGUI(app, data);
     introJoinSessionGUI(app, data);
   }
-  if (introData.bCreate) {
-    introHeaderGUI(app, data);
+  else if (introData.bCreate) {
     introCreateSessionGUI(app, data);
   }
-  if (introData.bTour) {
-    introHeaderGUI(app, data);
-  }
+  else if (introData.bTour) {
+
+  } else {
+    introMainGUI(app, data);
+    for (int i = 0; i < radials.length; i++) {
+      radials[i].update();
+      radials[i].display(360, NO_COLOR);
+    }
+  } 
 }
 
 /* method for drawing the header of the intro window
@@ -140,6 +143,14 @@ void introMainGUI(PApplet app, GWinData data) {
   joinSession.setVisible(true);
   createSession.setVisible(true);
   takeATour.setVisible(true);  
+  
+  roomCodeLabel.setVisible(false);
+  roomCodeField.setVisible(false);
+  nameLabel.setVisible(false);
+  nameField.setVisible(false);
+  play.setVisible(false);
+  back.setVisible(false);
+  clipboard.setVisible(false);
 }
 
 /* method for drawing the join session screen of the intro window
@@ -185,7 +196,6 @@ void introCreateSessionGUI(PApplet app, GWinData data) {
   play.setVisible(true);
   back.setVisible(true);
   clipboard.setVisible(true);
-  //clipboardCopy.setVisible(true);
 
   // If a room code has not been made, make one and save it to the window data
   if (((MyWinData)introWindow.data).sessionPassword == null)  ((MyWinData)introWindow.data).sessionPassword = makeSessionPassword();
