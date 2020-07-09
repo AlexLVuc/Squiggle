@@ -15,7 +15,7 @@ String activeRecordingFileName = null;
  * @param filename: desured filename of the recording for saving
  */
 void saveRecording(String filename) {
-  // close the player so that you can manipulate
+  // close the recording player so that you can save file
   recording.close();
   
   // get paths of temp file and new file location
@@ -25,7 +25,7 @@ void saveRecording(String filename) {
     Files.copy(oldPath, newPath);
   } 
   catch (IOException e) {
-    println("catch");
+    println("IOException: " + e);
   }
   
   //delete temp file after copying
@@ -33,7 +33,7 @@ void saveRecording(String filename) {
   println("Successfully saved!");
 }
 
-// method for making deleting the temporary recording file
+// method for deleting the temporary recording file
 void deleteTempRecordingFile() {
   // close the player so that you can delete the file
   recording.close();

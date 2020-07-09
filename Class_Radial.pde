@@ -4,7 +4,7 @@
  * Date: July 7, 2020
  */
 
-public final int timeToClick = 80;
+public final int timeToClick = 100;
 
 // file type declarations
 public final int WAV = 0;
@@ -48,6 +48,7 @@ class Radial {
    * @param fileType_:  file type of sound file
    * @param posx_:      x position of center of radial
    * @param posy_:      y position of center of radial
+   * @param others_:    array of other radials in a window to check from drag and drop activity
    */
   Radial(PApplet app_, String name_, String fileName_, int fileType_, int posx_, int posy_, Radial[] others_) {
     app = app_;
@@ -110,7 +111,7 @@ class Radial {
   /* method for creating a file containing float values of the radial
    *
    * @param array[]:   float array to be written to the file
-   * @param filePath:  path of the file being written to (starting in the skecth folder)
+   * @param fileSuffix:  suffix of the file being written to
    */
   void createArrayFile(float[] array, String fileSuffix) {
     println("Creating array file at:\t" + sketchPath() + "data\\" + fileName + fileSuffix + ".txt");
@@ -125,7 +126,7 @@ class Radial {
   /* method for creating a file containing float values of the radial
    *
    * @param array[]:   int array to be written to the file
-   * @param filePath:  path of the file being written to (starting in the skecth folder)
+   * @param fileSuffix:  suffix of the file being written to
    */
   void createArrayFile(int[] array, String fileSuffix) {
     println("Creating array file at:\t" + sketchPath() + "data\\" + fileName + fileSuffix + ".txt");
@@ -139,7 +140,7 @@ class Radial {
 
   /* method for creating a float array from a txt file data
    *
-   * @param filePath:  path of the file being written to (starting in the data folder)
+   * @param fileSuffix:  suffix of the file being written to
    */
   float[] createArrayFromFile(String fileSuffix) {
     println("Creating array from file at:\t" + sketchPath() + "data\\" + fileName + fileSuffix + ".txt");
@@ -232,12 +233,11 @@ class Radial {
     float[] fftSamples = new float[fftSize];
 
     // the number of analysis' that will be done
-    int totalChunks = (summedSamples.length / fftSize);
+    int totalChunks = (summedSamples.length / fftSize) + 1;
     int[] fftValues = new int[totalChunks];
 
     FFT fft = new FFT(fftSize, tempSample.sampleRate());
 
-    println("summedSamples size: " + summedSamples.length);
     for (int i = 0; i < totalChunks; i++) {
       int curChunkIndex = i * fftSize;
 
@@ -247,8 +247,7 @@ class Radial {
 
       // copy chunk into our analysis array
       // copy fftSize samples from summedSamples from curChunkIndex to fftSamples starting at position 0 
-      println("index: " + curChunkIndex + "\tfftSize: " + fftSize);
-      System.arraycopy( summedSamples, curChunkIndex, fftSamples, 0, fftSize);
+      System.arraycopy( summedSamples, curChunkIndex, fftSamples, 0, chunkSize);
 
       // if the chunk was smaller than the fftSize, we need to pad the analysis buffer with zeroes        
       if ( chunkSize < fftSize ) {
@@ -292,15 +291,19 @@ class Radial {
    * @param c:  color scheme used to display the Radial
    */
   void display(int n, int c) {
+    // ensure no more display points than data points in the arrays 
     if (n > 720) {
       n = 720;
     }
     drawRadial(n, c);
-    if (bOverHandle || bPressHandle) {
+    
+    if (bOverHandle || bPressHandle) {   
+      // used for drawing handle area aroudn the Radial
       app.noFill();
       app.stroke(0);
       app.circle(posX, posY, handleRadius*2);
     }
+    
     if (sound.isPlaying()) {
       drawRadialPosition();
     }
@@ -353,25 +356,72 @@ class Radial {
     app.strokeWeight(2);
     app.beginShape(); 
 
+    // used for making pulling the values from the arrays evenly if
+    // less display points are used than the size of the arrays
+    int ratio = maxArraySize / displayPoints;
+
     for (int pPos = 0; pPos < displayPoints; pPos++) {
-      if (colorScheme == 0) {
+      
+      // get color values for stroke
+      // currently broken
+      if (colorScheme == NO_COLOR) {
         rc = 0;
         gc = 0;
         bc = 0;
-      } 
-      else if (colorScheme == 1) {
-        rc = map(frequencyArray[pPos], 0, 512, 0, 85);
-        gc = map(frequencyArray[pPos], 0, 512, 86, 170);
-        bc = map(frequencyArray[pPos], 0, 512, 171, 255);
-      }  else {
+      } else if (colorScheme == COLOR) {
+        float scalar = map(frequencyArray[pPos * ratio], 0, 512, 0, 1); 
+        float a = (1 - scalar) / 0.2 ;
+        int X = floor(a);
+        int Y = floor(255 * (a - X));
+        //println("scalar: " + scalar + "\ta: " + a + "\tX: " + X + "\tY: " + Y);
+        switch (X) {
+        case 0: 
+          rc=255;
+          gc=Y;
+          bc=0;
+          break;
+        case 1: 
+          rc=255-Y;
+          gc=255;
+          bc=0;
+          break;
+        case 2: 
+          rc=0;
+          gc=255;
+          bc=Y;
+          break;
+        case 3: 
+          rc=0;
+          gc=255-Y;
+          bc=255;
+          break;
+        case 4: 
+          rc=Y;
+          gc=0;
+          bc=255;
+          break;
+        case 5: 
+          rc=255;
+          gc=0;
+          bc=255;
+          break;
+        default:
+          rc=0;
+          gc=0;
+          bc=0;
+        }
+      } else {
         rc = 0;
         gc = 0;
         bc = 0;
       }
-      app.stroke(rc, gc, bc);
+
+      //println("r:\t" + rc + "\tg:\t" + gc + "\tb:\t" + bc);
+      app.stroke(rc, gc, bc);  
+      
       // map the radius of the point between the max and min values of the file, 
       // and the max and min display range
-      r = map(sampleArray[pPos], arrayMin, arrayMax, minRadialDisplay, maxRadialDisplay);
+      r = map(sampleArray[pPos * ratio], arrayMin, arrayMax, minRadialDisplay, maxRadialDisplay);
       x = posX + (r * cos(radians(((360.0 / displayPoints) * pPos) - 90.0)));
       y = posY + (r * sin(radians(((360.0 / displayPoints) * pPos) - 90.0)));
 
@@ -463,6 +513,7 @@ class Radial {
 
   // play the sound
   void play() {
+    //play from time 0
     sound.play(0);
   }
 

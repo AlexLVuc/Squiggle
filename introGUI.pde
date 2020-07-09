@@ -17,10 +17,11 @@ public void introGUI() {
 
   G4P.setCtrlMode(GControlMode.CORNER);  //Set dimensioning to x1, y1, w, h
   G4P.setGlobalColorScheme(9);  // Custom scheme
-  
+
   //Setup for the intro window
-  introWindow = GWindow.getWindow(this, "Intro Screen", ((width - windowWidth) / 2) , ((height - windowHeight) / 2), windowWidth, windowHeight, JAVA2D);
+  introWindow = GWindow.getWindow(this, "Intro Screen", ((width - windowWidth) / 2), ((height - windowHeight) / 2), windowWidth, windowHeight, JAVA2D);
   introWindow.setActionOnClose(G4P.EXIT_APP);
+  introWindow.setAlwaysOnTop(true);
   introWindow.addDrawHandler(this, "introWindowDraw");
   introWindow.addMouseHandler(this, "introWindowMouse");
   introWindow.addKeyHandler(this, "introWindowKey");
@@ -31,13 +32,13 @@ public void introGUI() {
   ((MyWinData)introWindow.data).sessionPassword = null;
 
   // Button declarations and handlers
-  joinSession = new GButton(introWindow, (centerX() - 411 / 2), 315, 441, 68, "Join Session");
+  joinSession = new GButton(introWindow, centerGControlX(introWindow, introButW), 315, introButW, introButH, "Join Session");
   joinSession.addEventHandler(this, "handleBtnJoinSession");
   joinSession.setFont(Baskerville24);
-  createSession = new GButton(introWindow, (centerX() - 411 / 2), 411, 441, 68, "Create Session");
+  createSession = new GButton(introWindow, centerGControlX(introWindow, introButW), 411, introButW, introButH, "Create Session");
   createSession.addEventHandler(this, "handleBtnCreateSession");
   createSession.setFont(Baskerville24);
-  takeATour = new GButton(introWindow, (centerX() - 411 / 2), 507, 441, 68, "Take a Tour");
+  takeATour = new GButton(introWindow, centerGControlX(introWindow, introButW), 507, introButW, introButH, "Take a Tour");
   takeATour.addEventHandler(this, "handleBtnTakeATour");
   takeATour.setFont(Baskerville24);
   clipboard = new GButton(introWindow, 842, 354, 189, 27, "Copy to Clipboard");
@@ -80,11 +81,11 @@ public void introGUI() {
   nameLabel.setFont(Baskerville22);
   nameLabel.setText("Name");
   nameLabel.setVisible(false);
+
+
+  //Load in a sound files wihin a given folder
+  makeRadialArray(introWindow, findSoundFilesInDirectory(sketchPath() + "/data"));
   
-  //Load in a sound file by passing the name of the mp3 file
-  radials = new Radial[2];
-  radials[0] = new Radial(introWindow, "Shaker", "Shaker", MP3, width / 2, 800, radials);
-  radials[1] = new Radial(introWindow, "SquareBass", "SquareBass", MP3, width/4, 800, radials); 
 }
 
 /* default method for drawing to G4P intro window
@@ -98,19 +99,18 @@ public void introWindowDraw(PApplet app, GWinData data) {
 
   if (introData.bJoin) {
     introJoinSessionGUI(app, data);
-  }
-  else if (introData.bCreate) {
+  } else if (introData.bCreate) {
     introCreateSessionGUI(app, data);
-  }
-  else if (introData.bTour) {
-
+  } else if (introData.bTour) {
   } else {
     introMainGUI(app, data);
-    for (int i = 0; i < radials.length; i++) {
-      radials[i].update();
-      radials[i].display(360, NO_COLOR);
+    if (radials.length != 0) {
+      for (int i = 0; i < radials.length; i++) {
+        radials[i].update();
+        radials[i].display(180, NO_COLOR);
+      }
     }
-  } 
+  }
 }
 
 /* method for drawing the header of the intro window
@@ -129,6 +129,10 @@ void introHeaderGUI(PApplet app, GWinData data) {
   app.strokeWeight(2);
   app.stroke(#69D2E7);
   app.line(315, 286, 315 + 711, 286);
+
+  // decided to display frame rate, just for shits
+  app.fill(0);
+  app.text(frameRate, 20, 20);
 }
 
 /* method for drawing the main intro window
@@ -138,12 +142,12 @@ void introHeaderGUI(PApplet app, GWinData data) {
  */
 void introMainGUI(PApplet app, GWinData data) {
   MyWinData introData = (MyWinData)data;
-  
+
   // Make buttons from main screen visible
   joinSession.setVisible(true);
   createSession.setVisible(true);
   takeATour.setVisible(true);  
-  
+
   roomCodeLabel.setVisible(false);
   roomCodeField.setVisible(false);
   nameLabel.setVisible(false);

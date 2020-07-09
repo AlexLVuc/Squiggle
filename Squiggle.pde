@@ -30,21 +30,34 @@ GWindow introWindow;
 GButton joinSession, createSession, takeATour, clipboard, play, back;
 GTextField roomCodeField, nameField;
 GLabel squiggle, roomCodeLabel, nameLabel;
+int introButW = 411; 
+int introButH = 68;
 
 Font Baskerville64, Baskerville24, Baskerville22, Baskerville16;
 
 int windowWidth, windowHeight;
-int maxRadialDisplay = 100;
-int minRadialDisplay = 20;
+int maxRadialDisplay = 50;
+int minRadialDisplay = 10;
 
 Radial[] radials;
 
 void setup() {
+  // set the defualt window insisible
   fullScreen();
-  surface.setVisible(false);  
+  surface.setVisible(false); 
+  
+  // anti-aliasing to [input number]x
+  // onlny used for P3D or P2D renderers
+  //smooth(2);
+  
+  // set maximum fram rate to 120
+  // I need to do this to display the framerate
+  frameRate(120);
   windowWidth = 1280;
   windowHeight = 1080;
   
+  // really not sure if we need this. I think we only need one minim per window, but I have each Radial having its own minim, 
+  // so who knows
   mainMinim = new Minim(this);
   
   // get a stereo line-in: sample buffer length of 2048
@@ -54,7 +67,6 @@ void setup() {
   audioOut = mainMinim.getLineOut(Minim.STEREO);
   
   introGUI();
-
 }
 
 

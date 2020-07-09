@@ -46,7 +46,6 @@ public void handleBtnClipboard (GButton button, GEvent event) {
 }
 
 public void handleBtnPlay (GButton button, GEvent event) {
-  //mainGUI();
   //introWindow.close();
 }
 
