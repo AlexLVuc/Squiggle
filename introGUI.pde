@@ -19,7 +19,8 @@ public void introGUI() {
   G4P.setGlobalColorScheme(9);  // Custom scheme
 
   //Setup for the intro window
-  introWindow = GWindow.getWindow(this, "Intro Screen", ((width - windowWidth) / 2), ((height - windowHeight) / 2), windowWidth, windowHeight, JAVA2D);
+  //introWindow = GWindow.getWindow(this, "Intro Screen", ((width - windowWidth) / 2), ((height - windowHeight) / 2), windowWidth, windowHeight, JAVA2D);
+  introWindow = GWindow.getWindow(this, "Intro Screen", 0, 0, width, height, P2D);
   introWindow.setActionOnClose(G4P.EXIT_APP);
   introWindow.setAlwaysOnTop(true);
   introWindow.addDrawHandler(this, "introWindowDraw");
@@ -99,15 +100,17 @@ public void introWindowDraw(PApplet app, GWinData data) {
 
   if (introData.bJoin) {
     introJoinSessionGUI(app, data);
-  } else if (introData.bCreate) {
+  } 
+  else if (introData.bCreate) {
     introCreateSessionGUI(app, data);
-  } else if (introData.bTour) {
+  } 
+  else if (introData.bTour) {
   } else {
     introMainGUI(app, data);
     if (radials.length != 0) {
       for (int i = 0; i < radials.length; i++) {
         radials[i].update();
-        radials[i].display(180, NO_COLOR);
+        radials[i].display(180, COLOR);
       }
     }
   }

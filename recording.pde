@@ -82,3 +82,67 @@ void makeTempRecordingFile() {
   activeRecordingFileName = fileName;
   println("Recording Filename: " + fileName);
 }
+
+/*
+void draw()
+{
+  background(0); 
+  stroke(255);  
+
+  if (recorded) {
+    text("press p to playback recording.", 5, 15);
+    text("press s to save recording, press x to delete.", 5, 30);
+  }
+  else {
+    if (recorder.isRecording()) {
+     text("RECORDING. Press r to stop recording", 5, 15);
+   } else {
+     text("Press r to start recording", 5, 15);
+   }
+  }
+    
+}
+
+void keyReleased()
+{
+  if ( !recorded && key == 'r' ) { 
+    if (recorder.isRecording() ) {
+      recorder.endRecord();
+      recorded = true;
+      recorder.save();
+      player = minim.loadFile(tempRecordingFilePath + activeRecordingFileName);
+    } else {
+      recorder.beginRecord();
+    }
+  }
+
+  if ( key == 'p' ) {
+    if (recorded) {
+      // check and clear recorder if its not
+      if (player.isPlaying()) {
+        player.pause();
+      } else {
+        player.play(0);
+      }
+    }
+  }
+
+  if (key == 's') {
+    if (recorded) {
+      //selectFolder("please select folder", "folderSelected");
+      saveRecording("yessir");
+      recorded = false;
+      makeTempRecordingFile();
+    }
+  }
+
+  if (key == 'x') {
+    if (recorded) {
+      deleteTempRecordingFile();
+      recorded = false;
+      makeTempRecordingFile();
+    }
+  }
+  
+}
+*/

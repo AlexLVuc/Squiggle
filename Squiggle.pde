@@ -48,7 +48,7 @@ void setup() {
   
   // anti-aliasing to [input number]x
   // onlny used for P3D or P2D renderers
-  //smooth(2);
+  smooth(2);
   
   // set maximum fram rate to 120
   // I need to do this to display the framerate
