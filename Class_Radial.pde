@@ -348,7 +348,7 @@ class Radial {
    * TODO: add mapping for color schemes
    */
   void drawRadial(int displayPoints, int colorScheme) {
-    float rc, gc, bc;
+    color c1, c2, cf;
     float r, x, y;
     float arrayMin = floor(min(sampleArray));
     float arrayMax = ceil(max(sampleArray));
@@ -365,59 +365,35 @@ class Radial {
       // get color values for stroke
       // currently broken
       if (colorScheme == NO_COLOR) {
-        rc = 0;
-        gc = 0;
-        bc = 0;
+        cf = color(0,0,0);
       } else if (colorScheme == COLOR) {
-        float scalar = map(frequencyArray[pPos * ratio], 0, 512, 0, 1); 
-        float a = (1 - scalar) / 0.2 ;
-        int X = floor(a);
-        int Y = floor(255 * (a - X));
-        //println("scalar: " + scalar + "\ta: " + a + "\tX: " + X + "\tY: " + Y);
-        switch (X) {
-        case 0: 
-          rc=255;
-          gc=Y;
-          bc=0;
-          break;
-        case 1: 
-          rc=255-Y;
-          gc=255;
-          bc=0;
-          break;
-        case 2: 
-          rc=0;
-          gc=255;
-          bc=Y;
-          break;
-        case 3: 
-          rc=0;
-          gc=255-Y;
-          bc=255;
-          break;
-        case 4: 
-          rc=Y;
-          gc=0;
-          bc=255;
-          break;
-        case 5: 
-          rc=255;
-          gc=0;
-          bc=255;
-          break;
-        default:
-          rc=0;
-          gc=0;
-          bc=0;
+        float scalar = map(frequencyArray[pPos * ratio], 0, 400, 0, 100); 
+        if (scalar >= 75) {
+          c1 = color(255, 236, 0);  //#ffec00 yellow
+          c2 = color(179, 0, 0);    //#b30000 red
+          cf = lerpColor(c1, c2, ((scalar - 75.0) / 25.0));
+        }
+        else if (scalar >= 50) {
+          c1 = color(40, 255, 0);  //#28ff00 green
+          c2 = color(255, 236, 0); //#ffec00 yellow
+          cf = lerpColor(c1, c2, ((scalar - 50.0) / 25.0));
+        }
+        else if (scalar >= 25) {
+          c1 = color(5, 0, 255);   //#0500ff blue
+          c2 = color(40, 255, 0);  //#28ff00 green
+          cf = lerpColor(c1, c2, ((scalar - 75.0) / 100.0));
+        }
+        else {
+          c1 = color(87, 0, 158);   //#57009e purple
+          c2 = color(5, 0, 255);   //#0500ff blue
+          cf = lerpColor(c1, c2, ((scalar - 75.0) / 100.0));
         }
       } else {
-        rc = 0;
-        gc = 0;
-        bc = 0;
+        cf = color(0, 0, 0);
       }
 
       //println("r:\t" + rc + "\tg:\t" + gc + "\tb:\t" + bc);
-      app.stroke(rc, gc, bc);  
+      app.stroke(cf);  
       
       // map the radius of the point between the max and min values of the file, 
       // and the max and min display range

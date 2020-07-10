@@ -19,8 +19,7 @@ public void introGUI() {
   G4P.setGlobalColorScheme(9);  // Custom scheme
 
   //Setup for the intro window
-  //introWindow = GWindow.getWindow(this, "Intro Screen", ((width - windowWidth) / 2), ((height - windowHeight) / 2), windowWidth, windowHeight, JAVA2D);
-  introWindow = GWindow.getWindow(this, "Intro Screen", 0, 0, width, height, P2D);
+  introWindow = GWindow.getWindow(this, "Intro Screen", ((width - windowWidth) / 2), ((height - windowHeight) / 2), windowWidth, windowHeight, P2D);
   introWindow.setActionOnClose(G4P.EXIT_APP);
   introWindow.setAlwaysOnTop(true);
   introWindow.addDrawHandler(this, "introWindowDraw");
