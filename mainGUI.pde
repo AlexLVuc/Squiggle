@@ -12,10 +12,14 @@ public void mainGUI() {
   // setup for main window
   mainWindow = GWindow.getWindow(this, "Main Screen", ((width - windowWidth) / 2), ((height - windowHeight) / 2), windowWidth, windowHeight, JAVA2D);
   mainWindow.setActionOnClose(G4P.EXIT_APP);
+  introWindow.setAlwaysOnTop(true);
   mainWindow.addDrawHandler(this, "mainWindowDraw");
   mainWindow.addMouseHandler(this, "mainWindowMouse");
   mainWindow.addKeyHandler(this, "mainWindowKey");
   mainWindow.addData(new mainWinData());
+  
+  ((mainWinData)mainWindow.data).username = ((introWinData)introWindow.data).username;
+  
 
   G4P.messagesEnabled(false);   // disable messages on all G4P windows
   G4P.setGlobalColorScheme(9);  // Custom scheme
@@ -65,21 +69,15 @@ public void mainGUI() {
   radialsMinim = new Minim(mainWindow);
   makeRadialArray(mainWindow, findSoundFilesInDirectory(sketchPath() + "/data"));
   
-  String[] cams = Capture.list();
-  if (cams.length != 0) {
-    println("Available cameras: " + cams.length);
-    for (int i = 0; i < cams.length; i++) {
-      println("Name: " + cams[i]);
-    }
-  } else {
-    println("No cams available");
-  }
+  println("Username: " + ((mainWinData)mainWindow.data).username);
+  
 }
 
 public void mainWindowDraw(PApplet app, GWinData data) {
   mainWinData mainData = (mainWinData)data;  
-  app.background(#E8F4F8);
-
+  
+  mainHeaderGUI(app, data);
+  
   // check if cam is avaiable for data
   updateMainCams(app, data);
 
@@ -91,15 +89,15 @@ public void mainWindowDraw(PApplet app, GWinData data) {
 }
 
 void mainHeaderGUI(PApplet app, GWinData data) {
+  // main background
+  app.background(#E8F4F8);
+  //load logo
   app.image(logo, 31, 26, 100, 100);
-  // Line under logo
-  app.strokeWeight(2);
-  app.stroke(#69D2E7);
-  app.line(315, 286, 315 + 711, 286);
-
   // decided to display frame rate, just for shits
   app.fill(0);
-  app.text(frameRate, 20, 20);
+  app.textSize(12);
+  app.textAlign(RIGHT, TOP);
+  app.text(frameRate, windowWidth - 10, 10);
 }
 
 void updateMainCams(PApplet app, GWinData data) {
@@ -112,7 +110,18 @@ void updateMainCams(PApplet app, GWinData data) {
     }
     app.set(45, 147, cam);
   } else {
-    app.fill(0);
+    // if the webcam is toggled off, turn space black and display the username
+    app.fill(50);
     app.rect(45, 147, cam.width, cam.height);
+    app.fill(255);
+    app.textSize(32);
+    app.textAlign(CENTER, CENTER);
+    // if the username is larger than 9 characters, display the first 6 and "..."
+    if (mainData.username.length() > 9) {
+      app.text(mainData.username.substring(0, 6) + "...", 45 + (cam.width / 2), 147 + (cam.height / 2));
+    }else {
+      app.text(mainData.username, 45 + (cam.width / 2), 147 + (cam.height / 2));
+    }
+    
   }
 }

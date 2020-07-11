@@ -418,8 +418,9 @@ class Radial {
     
     // center Radial name at bottom of Radial
     app.fill(0);
-    app.textAlign(CENTER);
-    app.text(fileName, posX, posY + maxRadialDisplay + 2);
+    app.textSize(12);
+    app.textAlign(CENTER, TOP);
+    app.text(fileName, posX, posY + maxRadialDisplay);
   }
 
   // method for drawing the position of the player on the Radial

@@ -39,8 +39,21 @@ public void handleBtnClipboard (GButton button, GEvent event) {
 }
 
 public void handleBtnPlay (GButton button, GEvent event) {
-  introWindow.close();
-  mainGUI();
+  // check if username or roomcode fields are blank and prompt the user to input values
+  if (nameField.getText().equals("") || roomCodeField.getText().equals("")) {
+    if (nameField.getText().equals("")) {
+      nameField.setLocalColor(2, #FF0000);
+      nameField.setPromptText("Please Input Your Name");
+    }
+    if (roomCodeField.getText().equals("")) {
+      roomCodeField.setLocalColor(2, #FF0000);
+      roomCodeField.setPromptText("Please Input Room Code");
+    }
+  } else {
+    ((introWinData)introWindow.data).username = nameField.getText();
+    introWindow.close();
+    mainGUI();
+  } 
 }
 
 public void handleBtnBack (GButton button, GEvent event) {
@@ -51,6 +64,11 @@ public void handleBtnBack (GButton button, GEvent event) {
       ((introWinData)introWindow.data).bCreate = false;
       ((introWinData)introWindow.data).sessionPassword = null;
       
+      roomCodeField.setLocalColor(2, #000050);
+      roomCodeField.setPromptText("Input Room Code");
+      nameField.setLocalColor(2, #000050);
+      nameField.setPromptText("Input Your Name");
+      
       // Hide text fields, labels and buttons from join or create screen
       roomCodeLabel.setVisible(false);
       roomCodeField.setVisible(false);
@@ -59,6 +77,8 @@ public void handleBtnBack (GButton button, GEvent event) {
       play.setVisible(false);
       back.setVisible(false);
       clipboard.setVisible(false);
+      
+      
       
       // added to fix error of user clicking "join session" after first clicking "create session"
       // and having the password already in the text field

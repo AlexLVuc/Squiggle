@@ -37,7 +37,7 @@ Capture cam;
 Font Baskerville64, Baskerville24, Baskerville22, Baskerville16;
 
 int windowWidth, windowHeight;
-int maxRadialDisplay = 50;
+int maxRadialDisplay = 55;
 int minRadialDisplay = 10;
 
 Radial[] radials;
@@ -83,8 +83,10 @@ class introWinData extends GWinData {
   boolean bJoin, bCreate, bTour;
   int butWidth;
   String sessionPassword;
+  String username;
 }
 
 class mainWinData extends GWinData {
   boolean bCameraOn;
+  String username;
 }

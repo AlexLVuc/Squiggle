@@ -130,7 +130,9 @@ void introHeaderGUI(PApplet app, GWinData data) {
 
   // decided to display frame rate, just for shits
   app.fill(0);
-  app.text(frameRate, 20, 20);
+  app.textSize(12);
+  app.textAlign(RIGHT, TOP);
+  app.text(frameRate, windowWidth - 10, 10);
 }
 
 /* method for drawing the main intro window
