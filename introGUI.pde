@@ -197,7 +197,7 @@ void introCreateSessionGUI(PApplet app, GWinData data) {
   clipboard.setVisible(true);
 
   // If a room code has not been made, make one and save it to the window data
-  if (((MyWinData)introWindow.data).sessionPassword == null)  ((MyWinData)introWindow.data).sessionPassword = makeSessionPassword();
+  if (((MyWinData)introWindow.data).sessionPassword == null)  ((MyWinData)introWindow.data).sessionPassword = makeSessionPasswordPort();
 
   // Add room code into text field
   roomCodeField.setText(((MyWinData)introWindow.data).sessionPassword);

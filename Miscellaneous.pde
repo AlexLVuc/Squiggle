@@ -43,6 +43,11 @@ String makeSessionPassword() {
   return password;
 }
 
+// method for generating port & session password
+String makeSessionPasswordPort(){
+  return Integer.toString(int(random(1000, 9999)));
+}
+
 // returns the center x value of the window
 int centerX(PApplet app) {
   return app.width / 2;
