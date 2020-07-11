@@ -23,7 +23,7 @@ public Font getFont(String ttf_name, int style, float size) {
 }
 
 // method for making a random 8 digit session password
-String makeSessionPassword() {
+String makeSessionPasswordPort() {
   String password = "";
   int temp;
   for (int i = 0; i < 8; i++) {
@@ -41,11 +41,6 @@ String makeSessionPassword() {
     }
   } 
   return password;
-}
-
-// method for generating port & session password
-String makeSessionPasswordPort(){
-  return Integer.toString(int(random(1000, 9999)));
 }
 
 // returns the center x value of the window

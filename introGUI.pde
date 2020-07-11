@@ -12,9 +12,6 @@ GLabel squiggle, roomCodeLabel, nameLabel;
 
 //This method initializes all elements of the intro screen
 public void introGUI() {
-  //Load in logo png from data folder  
-  logo = loadImage("Squiggle_Logo.png");
-
   // Bring in required fonts for intro window
   Baskerville64 = getFont("fonts/BASKVILL.TTF", Font.PLAIN, 64);
   Baskerville24 = getFont("fonts/BASKVILL.TTF", Font.PLAIN, 24);
@@ -32,11 +29,11 @@ public void introGUI() {
   introWindow.addDrawHandler(this, "introWindowDraw");
   introWindow.addMouseHandler(this, "introWindowMouse");
   introWindow.addKeyHandler(this, "introWindowKey");
-  introWindow.addData(new MyWinData());
-  ((MyWinData)introWindow.data).bJoin = false;
-  ((MyWinData)introWindow.data).bCreate = false;
-  ((MyWinData)introWindow.data).bTour = false;
-  ((MyWinData)introWindow.data).sessionPassword = null;
+  introWindow.addData(new introWinData());
+  ((introWinData)introWindow.data).bJoin = false;
+  ((introWinData)introWindow.data).bCreate = false;
+  ((introWinData)introWindow.data).bTour = false;
+  ((introWinData)introWindow.data).sessionPassword = null;
 
   // Button declarations and handlers
   joinSession = new GButton(introWindow, centerGControlX(introWindow, introButW), 315, introButW, introButH, "Join Session");
@@ -98,7 +95,7 @@ public void introGUI() {
  * @param data:  G4P window data (automatically applied)
  */
 public void introWindowDraw(PApplet app, GWinData data) {
-  MyWinData introData = (MyWinData)data;
+  introWinData introData = (introWinData)data;
   introHeaderGUI(app, data); 
 
   if (introData.bJoin) {
@@ -121,7 +118,7 @@ public void introWindowDraw(PApplet app, GWinData data) {
  * @param data:  G4P window data (automatically applied)
  */
 void introHeaderGUI(PApplet app, GWinData data) {
-  MyWinData introData = (MyWinData)data;
+  introWinData introData = (introWinData)data;
   //background color
   app.background(#E8F4F8);
   // Logo
@@ -142,7 +139,7 @@ void introHeaderGUI(PApplet app, GWinData data) {
  * @param data:  G4P window data (automatically applied)
  */
 void introMainGUI(PApplet app, GWinData data) {
-  MyWinData introData = (MyWinData)data;
+  introWinData introData = (introWinData)data;
 
   // Make buttons from main screen visible
   joinSession.setVisible(true);
@@ -164,7 +161,7 @@ void introMainGUI(PApplet app, GWinData data) {
  * @param data:  G4P window data (automatically applied)
  */
 void introJoinSessionGUI(PApplet app, GWinData data) {
-  MyWinData introData = (MyWinData)data;
+  introWinData introData = (introWinData)data;
 
   // Hide buttons from main screen
   joinSession.setVisible(false);
@@ -186,7 +183,7 @@ void introJoinSessionGUI(PApplet app, GWinData data) {
  * @param data:  G4P window data (automatically applied)
  */
 void introCreateSessionGUI(PApplet app, GWinData data) {
-  MyWinData introData = (MyWinData)data;
+  introWinData introData = (introWinData)data;
 
   // Hide buttons from main screen
   joinSession.setVisible(false);
@@ -203,10 +200,10 @@ void introCreateSessionGUI(PApplet app, GWinData data) {
   clipboard.setVisible(true);
 
   // If a room code has not been made, make one and save it to the window data
-  if (((MyWinData)introWindow.data).sessionPassword == null)  ((MyWinData)introWindow.data).sessionPassword = makeSessionPasswordPort();
+  if (((introWinData)introWindow.data).sessionPassword == null)  ((introWinData)introWindow.data).sessionPassword = makeSessionPasswordPort();
 
   // Add room code into text field
-  roomCodeField.setText(((MyWinData)introWindow.data).sessionPassword);
+  roomCodeField.setText(((introWinData)introWindow.data).sessionPassword);
   
   
 }

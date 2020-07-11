@@ -29,12 +29,10 @@ Minim radialsMinim;
 Minim mainMinim;
 PImage logo;
 
-
 int introButW = 411; 
 int introButH = 68;
 
 Capture cam;
-boolean cameraOn;
 
 Font Baskerville64, Baskerville24, Baskerville22, Baskerville16;
 
@@ -69,6 +67,9 @@ void setup() {
   // get an output we can playback the recording on
   audioOut = mainMinim.getLineOut(Minim.STEREO);
 
+  //Load in logo png from data folder  
+  logo = loadImage("Squiggle_Logo.png");
+  
   introGUI();
 }
 
@@ -78,8 +79,12 @@ void draw() {
 }
 
 
-class MyWinData extends GWinData {
+class introWinData extends GWinData {
   boolean bJoin, bCreate, bTour;
   int butWidth;
   String sessionPassword;
+}
+
+class mainWinData extends GWinData {
+  boolean bCameraOn;
 }

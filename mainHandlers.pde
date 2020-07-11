@@ -1,29 +1,29 @@
 
 public void mainWindowMouse(PApplet app, GWinData data, MouseEvent event) {
-  MyWinData mainData = (MyWinData)data;
-  
+  mainWinData mainData = (mainWinData)data;
+
   // once the mouse is released, make all Radial handles inactive
   if (event.getAction() == MouseEvent.RELEASE) {
     for (int i = 0; i < radials.length; i++) {
       radials[i].releaseHandleEvent();
     }
-  }  
+  }
 }
 
 public void mainWindowKey(PApplet app, GWinData data, KeyEvent event) {
-  MyWinData mainData = (MyWinData)data;
+  mainWinData mainData = (mainWinData)data;
 }
 
 
 public void handleWebcamToggle1(GButton button, GEvent event) {
-  println("webcamToggle1 - GButton >> GEvent." + event + " @ " + millis());
-  if (cameraOn){
-    cam.stop();
-    cameraOn = false;
-  }
-  else {
-    cam.start();
-    cameraOn = true;
+  if (event == GEvent.CLICKED) {
+    if (((mainWinData)mainWindow.data).bCameraOn) {
+      cam.stop();
+      ((mainWinData)mainWindow.data).bCameraOn = false;
+    } else {
+      cam.start();
+      ((mainWinData)mainWindow.data).bCameraOn = true;
+    }
   }
 } 
 

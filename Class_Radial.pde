@@ -415,6 +415,11 @@ class Radial {
       app.curveVertex(x, y);
     }
     app.endShape();
+    
+    // center Radial name at bottom of Radial
+    app.fill(0);
+    app.textAlign(CENTER);
+    app.text(fileName, posX, posY + maxRadialDisplay + 2);
   }
 
   // method for drawing the position of the player on the Radial
