@@ -3,8 +3,14 @@
  * Creator: Michael Jamieson
  * Date: July 4, 2020
  */
+ 
+// All GWindow element declarations for intro window
+GWindow introWindow;
+GButton joinSession, createSession, takeATour, clipboard, play, back;
+GTextField roomCodeField, nameField;
+GLabel squiggle, roomCodeLabel, nameLabel;
 
-//This method initializes all elemts of the intro screen
+//This method initializes all elements of the intro screen
 public void introGUI() {
   //Load in logo png from data folder  
   logo = loadImage("Squiggle_Logo.png");
@@ -16,11 +22,11 @@ public void introGUI() {
   Baskerville16 = getFont("fonts/BASKVILL.TTF", Font.PLAIN, 16);
 
   G4P.setCtrlMode(GControlMode.CORNER);  //Set dimensioning to x1, y1, w, h
+  //G4P.messagesEnabled(false);   // disable messages on all G4P windows
   G4P.setGlobalColorScheme(9);  // Custom scheme
 
   //Setup for the intro window
-  //introWindow = GWindow.getWindow(this, "Intro Screen", ((width - windowWidth) / 2), ((height - windowHeight) / 2), windowWidth, windowHeight, JAVA2D);
-  introWindow = GWindow.getWindow(this, "Intro Screen", 0, 0, width, height, JAVA2D);
+  introWindow = GWindow.getWindow(this, "Intro Screen", ((width - windowWidth) / 2), ((height - windowHeight) / 2), windowWidth, windowHeight, JAVA2D);
   introWindow.setActionOnClose(G4P.CLOSE_WINDOW);
   introWindow.setAlwaysOnTop(true);
   introWindow.addDrawHandler(this, "introWindowDraw");
@@ -81,11 +87,8 @@ public void introGUI() {
   nameLabel.setTextAlign(GAlign.LEFT, null);
   nameLabel.setFont(Baskerville22);
   nameLabel.setText("Name");
-  nameLabel.setVisible(false);
-
-
-  //Load in a sound files wihin a given folder
-  makeRadialArray(introWindow, findSoundFilesInDirectory(sketchPath() + "/data"));
+  nameLabel.setVisible(false); 
+  
   
 }
 
@@ -106,6 +109,9 @@ public void introWindowDraw(PApplet app, GWinData data) {
   } 
   else if (introData.bTour) {
   } 
+  else {
+    introMainGUI(app, data);
+  }
 }
 
 /* method for drawing the header of the intro window

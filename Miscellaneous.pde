@@ -117,8 +117,8 @@ ArrayList<soundFile> findSoundFilesInDirectory(String path) {
       int fNameLength = fNameFull.length();
       String fExt = fNameFull.substring(fNameLength - 4, fNameLength);
       String fName = fNameFull.substring(0, fNameLength - 4);
-      println("Name: " + fName + "\tfile ext.: " + fExt);
       if (fExt.equals(".mp3") || fExt.equals(".wav")) {
+        println("Name: " + fName + "\tfile ext.: " + fExt);
         println("adding to list");
         // add to the array list
         tempFiles.add(new soundFile(fName, fExt));

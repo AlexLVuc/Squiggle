@@ -6,13 +6,6 @@
 
 public void introWindowMouse(PApplet app, GWinData data, MouseEvent event) {
   MyWinData introData = (MyWinData)data;
-  
-  // once the mouse is released, make all Radial handles inactive
-  if (event.getAction() == MouseEvent.RELEASE) {
-    for (int i = 0; i < radials.length; i++) {
-      radials[i].releaseHandleEvent();
-    }
-  }  
 }
 
 public void introWindowKey(PApplet app, GWinData data, KeyEvent event) {

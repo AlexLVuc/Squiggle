@@ -25,7 +25,6 @@ class Radial {
   final int maxArraySize = 720;
 
   PApplet app;
-  Minim radialMinim;
   AudioPlayer sound;
   String name, fileName, filePath;
   int posX, posY, fileType, soundLength;
@@ -60,9 +59,6 @@ class Radial {
     filePath = ""; //NEED TO CHANGE
     others = others_;
 
-    // NOT SURE IF NEEDED
-    radialMinim = new Minim(app);
-
     // check for data array files
     if (!checkForArrayFile("_s")) {
       createArrayFile(createSampleArray(), "_s");
@@ -75,9 +71,13 @@ class Radial {
 
     // load the correct file type into the player
     if (fileType == MP3) { 
-      sound = radialMinim.loadFile(fileName + ".mp3");
+      try {
+        sound = radialsMinim.loadFile(fileName + ".mp3");
+      } catch (Exception e) {
+        println("Filename: " + fileName + "Exception: " + e);
+      }
     } else {
-      sound = radialMinim.loadFile(fileName + ".wav");
+      sound = radialsMinim.loadFile(fileName + ".wav");
     }
 
     // AudioSample.length() does not equal AudioSample.position() at the end of the sound,
@@ -161,9 +161,9 @@ class Radial {
     // load in the audio file as a sample
     AudioSample tempSample;
     if (fileType == MP3) {     
-      tempSample = radialMinim.loadSample(fileName + ".mp3");
+      tempSample = radialsMinim.loadSample(fileName + ".mp3");
     } else {
-      tempSample = radialMinim.loadSample(fileName + ".wav");
+      tempSample = radialsMinim.loadSample(fileName + ".wav");
     }
 
     // If the file only has a mono track, then you only need one array of values
@@ -207,9 +207,9 @@ class Radial {
     // load in the audio file as a sample
     AudioSample tempSample;
     if (fileType == MP3) {     
-      tempSample = radialMinim.loadSample(fileName + ".mp3");
+      tempSample = radialsMinim.loadSample(fileName + ".mp3");
     } else {
-      tempSample = radialMinim.loadSample(fileName + ".wav");
+      tempSample = radialsMinim.loadSample(fileName + ".wav");
     }
 
     // If the file only has a mono track, then you only need one array of values

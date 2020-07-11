@@ -1,6 +1,7 @@
 import g4p_controls.*;
 import processing.video.*;
 
+// for FFT
 import ddf.minim.*; 
 import ddf.minim.analysis.*;
 import ddf.minim.ugens.*;
@@ -10,7 +11,7 @@ import java.awt.*;
 import java.awt.datatransfer.StringSelection;
 import java.awt.datatransfer.Clipboard;
 
-//For MP3 and WAV file saving
+// for MP3 and WAV file saving
 import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -24,15 +25,11 @@ AudioRecorder recorder;
 AudioOutput audioOut;
 AudioPlayer recording;
 
+Minim radialsMinim;
 Minim mainMinim;
 PImage logo;
 
-// All GWindow element declarations for intro window
-GWindow introWindow;
-GWindow mainWindow;
-GButton joinSession, createSession, takeATour, clipboard, play, back;
-GTextField roomCodeField, nameField;
-GLabel squiggle, roomCodeLabel, nameLabel;
+
 int introButW = 411; 
 int introButH = 68;
 
