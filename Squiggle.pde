@@ -1,4 +1,6 @@
 import g4p_controls.*;
+import processing.video.*;
+
 import ddf.minim.*; 
 import ddf.minim.analysis.*;
 import ddf.minim.ugens.*;
@@ -27,11 +29,15 @@ PImage logo;
 
 // All GWindow element declarations for intro window
 GWindow introWindow;
+GWindow mainWindow;
 GButton joinSession, createSession, takeATour, clipboard, play, back;
 GTextField roomCodeField, nameField;
 GLabel squiggle, roomCodeLabel, nameLabel;
 int introButW = 411; 
 int introButH = 68;
+
+Capture cam;
+boolean cameraOn;
 
 Font Baskerville64, Baskerville24, Baskerville22, Baskerville16;
 
@@ -65,7 +71,7 @@ void setup() {
   audioIn = mainMinim.getLineIn(Minim.STEREO, 2048);
   // get an output we can playback the recording on
   audioOut = mainMinim.getLineOut(Minim.STEREO);
-  
+
   introGUI();
 }
 

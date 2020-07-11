@@ -20,8 +20,8 @@ public void introGUI() {
 
   //Setup for the intro window
   //introWindow = GWindow.getWindow(this, "Intro Screen", ((width - windowWidth) / 2), ((height - windowHeight) / 2), windowWidth, windowHeight, JAVA2D);
-  introWindow = GWindow.getWindow(this, "Intro Screen", 0, 0, width, height, P2D);
-  introWindow.setActionOnClose(G4P.EXIT_APP);
+  introWindow = GWindow.getWindow(this, "Intro Screen", 0, 0, width, height, JAVA2D);
+  introWindow.setActionOnClose(G4P.CLOSE_WINDOW);
   introWindow.setAlwaysOnTop(true);
   introWindow.addDrawHandler(this, "introWindowDraw");
   introWindow.addMouseHandler(this, "introWindowMouse");
@@ -105,15 +105,7 @@ public void introWindowDraw(PApplet app, GWinData data) {
     introCreateSessionGUI(app, data);
   } 
   else if (introData.bTour) {
-  } else {
-    introMainGUI(app, data);
-    if (radials.length != 0) {
-      for (int i = 0; i < radials.length; i++) {
-        radials[i].update();
-        radials[i].display(180, COLOR);
-      }
-    }
-  }
+  } 
 }
 
 /* method for drawing the header of the intro window
@@ -209,4 +201,6 @@ void introCreateSessionGUI(PApplet app, GWinData data) {
 
   // Add room code into text field
   roomCodeField.setText(((MyWinData)introWindow.data).sessionPassword);
+  
+  
 }
