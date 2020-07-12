@@ -10,6 +10,8 @@ GButton joinSession, createSession, takeATour, clipboard, play, back;
 GTextField roomCodeField, nameField;
 GLabel squiggle, roomCodeLabel, nameLabel;
 
+int introButLargeW, introButLargeH, introButSmallW, introButSmallH, introFieldW, introFieldH;
+
 //This method initializes all elements of the intro screen
 public void introGUI() {
   // Bring in required fonts for intro window
@@ -36,35 +38,37 @@ public void introGUI() {
   ((introWinData)introWindow.data).sessionPassword = null;
 
   // Button declarations and handlers
-  joinSession = new GButton(introWindow, centerGControlX(introWindow, introButW), 315, introButW, introButH, "Join Session");
+  joinSession = new GButton(introWindow, centerGControlX(introWindow, introButLargeW), 315, introButLargeW, introButLargeH, "Join Session");
   joinSession.addEventHandler(this, "handleBtnJoinSession");
   joinSession.setFont(Baskerville24);
-  createSession = new GButton(introWindow, centerGControlX(introWindow, introButW), 411, introButW, introButH, "Create Session");
+  createSession = new GButton(introWindow, centerGControlX(introWindow, introButLargeW), 411, introButLargeW, introButLargeH, "Create Session");
   createSession.addEventHandler(this, "handleBtnCreateSession");
   createSession.setFont(Baskerville24);
-  takeATour = new GButton(introWindow, centerGControlX(introWindow, introButW), 507, introButW, introButH, "Take a Tour");
+  takeATour = new GButton(introWindow, centerGControlX(introWindow, introButLargeW), 507, introButLargeW, introButLargeH, "Take a Tour");
   takeATour.addEventHandler(this, "handleBtnTakeATour");
   takeATour.setFont(Baskerville24);
   clipboard = new GButton(introWindow, 842, 354, 189, 27, "Copy to Clipboard");
   clipboard.addEventHandler(this, "handleBtnClipboard");
   clipboard.setFont(Baskerville16);
   clipboard.setVisible(false);
-  play = new GButton(introWindow, 631, 499, 101, 41, "PLAY");
+  play = new GButton(introWindow, centerGControlX(introWindow, introButSmallW), 499, introButSmallW, introButSmallH, "PLAY");
   play.addEventHandler(this, "handleBtnPlay");
   play.setFont(Baskerville16);
   play.setVisible(false);
-  back = new GButton(introWindow, 10, 10, 80, 30, "BACK");
+  back = new GButton(introWindow, 10, 10, introButSmallW, introButSmallH, "BACK");
   back.addEventHandler(this, "handleBtnBack");
   back.setFont(Baskerville16);
   back.setVisible(false);
 
   // Text field declarations
-  roomCodeField = new GTextField(introWindow, 528, 348, 304, 40);
+  roomCodeField = new GTextField(introWindow, centerGControlX(introWindow, introFieldW), 348, introFieldW, introFieldH);
+  roomCodeField.addEventHandler(this, "handleRoomCodeTextField");
   roomCodeField.tag = "roomCode";
   roomCodeField.setFont(Baskerville24);
   roomCodeField.setPromptText("Input Room Code");
   roomCodeField.setVisible(false);
-  nameField = new GTextField(introWindow, 528, 443, 304, 40);
+  nameField = new GTextField(introWindow, centerGControlX(introWindow, introFieldW), 443, introFieldW, introFieldH);
+  nameField.addEventHandler(this, "handleNameTextField");
   nameField.tag = "name";
   nameField.setFont(Baskerville24);
   nameField.setPromptText("Input Your Name");
@@ -84,9 +88,7 @@ public void introGUI() {
   nameLabel.setTextAlign(GAlign.LEFT, null);
   nameLabel.setFont(Baskerville22);
   nameLabel.setText("Name");
-  nameLabel.setVisible(false); 
-  
-  
+  nameLabel.setVisible(false);  
 }
 
 /* default method for drawing to G4P intro window
@@ -114,8 +116,8 @@ public void introWindowDraw(PApplet app, GWinData data) {
 /* method for drawing the header of the intro window
  * this includes: logo, name, and underline
  *
- * @param app:   name of G4P window (automatically applied)
- * @param data:  G4P window data (automatically applied)
+ * @param app:   name of G4P window
+ * @param data:  G4P window data
  */
 void introHeaderGUI(PApplet app, GWinData data) {
   introWinData introData = (introWinData)data;
@@ -137,8 +139,8 @@ void introHeaderGUI(PApplet app, GWinData data) {
 
 /* method for drawing the main intro window
  *
- * @param app:   name of G4P window (automatically applied)
- * @param data:  G4P window data (automatically applied)
+ * @param app:   name of G4P window
+ * @param data:  G4P window data
  */
 void introMainGUI(PApplet app, GWinData data) {
   introWinData introData = (introWinData)data;
@@ -159,8 +161,8 @@ void introMainGUI(PApplet app, GWinData data) {
 
 /* method for drawing the join session screen of the intro window
  *
- * @param app:   name of G4P window (automatically applied)
- * @param data:  G4P window data (automatically applied)
+ * @param app:   name of G4P window
+ * @param data:  G4P window data
  */
 void introJoinSessionGUI(PApplet app, GWinData data) {
   introWinData introData = (introWinData)data;
@@ -181,8 +183,8 @@ void introJoinSessionGUI(PApplet app, GWinData data) {
 
 /* method for drawing the create session screen of the intro window
  *
- * @param app:   name of G4P window (automatically applied)
- * @param data:  G4P window data (automatically applied)
+ * @param app:   name of G4P window
+ * @param data:  G4P window data
  */
 void introCreateSessionGUI(PApplet app, GWinData data) {
   introWinData introData = (introWinData)data;
@@ -206,6 +208,14 @@ void introCreateSessionGUI(PApplet app, GWinData data) {
 
   // Add room code into text field
   roomCodeField.setText(((introWinData)introWindow.data).sessionPassword);
-  
-  
+}
+
+// method for later so we can do auto formatting
+void setIntroGUIValues() { 
+  introButLargeW = 411; 
+  introButLargeH = 68;
+  introFieldW = 304;
+  introFieldH = 40;
+  introButSmallW = 101;
+  introButSmallH = 41;
 }

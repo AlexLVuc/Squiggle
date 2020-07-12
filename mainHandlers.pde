@@ -51,6 +51,25 @@ public void handleOpen(GButton button, GEvent event) {
   println("openButton - GButton >> GEvent." + event + " @ " + millis());
 } 
 
-public void rpmSlider_change1(GCustomSlider source, GEvent event) { 
-  println("custom_slider1 - GCustomSlider >> GEvent." + event + " @ " + millis());
+public void handleRadialAreaSlider(GCustomSlider slider, GEvent event) { 
+  float scalar = ((mainWinData)mainWindow.data).lastRadialPosX - (windowWidth - radialAreaBorder - maxRadialRadius);
+  for (int i = 0; i < radials.length; i++) {
+    radials[i].posX = (maxRadialRadius * ((2 * i) + 1)) + (radialSpacing * i) + radialAreaBorder - (int(slider.getValueF() * scalar));
+  }
 } 
+
+public void handleBPMTextField(GTextField field, GEvent event) {
+  if (event == GEvent.LOST_FOCUS) {
+    int bpm = field.getValueI();
+    
+    
+    // if the value input is not valid, set to 120
+    if (bpm == -1) {
+      println("setting");
+      field.setText("120");
+    } else {
+      ((mainWinData)mainWindow.data).BPM = bpm; 
+      audioOut.setTempo(bpm);
+    }
+  }
+}

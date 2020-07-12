@@ -91,17 +91,26 @@ void printLoadedAudioFileInfo(AudioPlayer file) {
   println("Buffer size: " + round(file.bufferSize()) + "\n");
 }
 
+
+/* method that mfills the radials array with all sound files within a directory
+ *
+ * @param app:        name of G4P window radials is drawn on
+ * @param arrayList:  arrayList of soundFile objects of all sound files in a directory
+ */
 void makeRadialArray(PApplet app, ArrayList<soundFile> arrayList) {
   radials = new Radial[arrayList.size()];
-  float spacing = app.width / (arrayList.size() + 1);
   for (int i = arrayList.size() - 1; i >= 0; i--) {
     soundFile file = arrayList.get(i);
-    radials[i] = new Radial(app, file.name, file.name, file.fileType, int((spacing * i) + spacing) , 800, radials);
+    radials[i] = new Radial(app, file.name, file.name, file.fileType, (maxRadialRadius * ((2 * i) + 1)) + (radialSpacing * i) + radialAreaBorder, 900, radials);
     arrayList.remove(i);
   } 
 }
 
-// make an array list of all mp3 or wav files in a directory
+
+/* method that makes an arrayList of all mp3 or wav files in a directory
+ *
+ * @param path:  path of folder you are searching
+ */
 ArrayList<soundFile> findSoundFilesInDirectory(String path) {
   // list of files in directory
   File[] files = getFilesFromDirectory(path);
@@ -129,7 +138,11 @@ ArrayList<soundFile> findSoundFilesInDirectory(String path) {
   return tempFiles;
 }
 
-// method that returns all the files in a directory as an array of File objects
+
+/* method that returns all the files in a directory as an array of File objects
+ *
+ * @param dir:  directory of folder you are searching
+ */
 File[] getFilesFromDirectory(String dir) {
   File file = new File(dir);
   if (file.isDirectory()) {

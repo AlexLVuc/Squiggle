@@ -37,7 +37,7 @@ class Radial {
   boolean bOtherActiveHandle = false;
   boolean bFirstTimeValue = false;
   float lastHandlePressTime = 0;
-  int handleRadius = maxRadialDisplay;
+  int handleRadius = maxRadialRadius;
 
   /* Contructor for a radial object
    * 
@@ -74,10 +74,14 @@ class Radial {
       try {
         sound = radialsMinim.loadFile(fileName + ".mp3");
       } catch (Exception e) {
-        println("Filename: " + fileName + "Exception: " + e);
+        println("Exception: " + e + " when attempting to load " + fileName + ".mp3");
       }
     } else {
-      sound = radialsMinim.loadFile(fileName + ".wav");
+      try {
+        sound = radialsMinim.loadFile(fileName + ".wav");
+      } catch (Exception e) {
+        println("Exception: " + e + " when attempting to load " + fileName + ".wav");
+      }
     }
 
     // AudioSample.length() does not equal AudioSample.position() at the end of the sound,
@@ -397,7 +401,7 @@ class Radial {
       
       // map the radius of the point between the max and min values of the file, 
       // and the max and min display range
-      r = map(sampleArray[pPos * ratio], arrayMin, arrayMax, minRadialDisplay, maxRadialDisplay);
+      r = map(sampleArray[pPos * ratio], arrayMin, arrayMax, minRadialRadius, maxRadialRadius);
       x = posX + (r * cos(radians(((360.0 / displayPoints) * pPos) - 90.0)));
       y = posY + (r * sin(radians(((360.0 / displayPoints) * pPos) - 90.0)));
 
@@ -407,7 +411,7 @@ class Radial {
       }
       // if we are at the end, make the final point the same as the first point
       if (pPos == (displayPoints - 1)) {
-        r = map(sampleArray[0], arrayMin, arrayMax, minRadialDisplay, maxRadialDisplay);
+        r = map(sampleArray[0], arrayMin, arrayMax, minRadialRadius, maxRadialRadius);
         x = posX + (r * cos(radians(-90)));
         y = posY + (r * sin(radians(-90)));
         app.curveVertex(x, y);
@@ -420,7 +424,7 @@ class Radial {
     app.fill(0);
     app.textSize(12);
     app.textAlign(CENTER, TOP);
-    app.text(fileName, posX, posY + maxRadialDisplay);
+    app.text(fileName, posX, posY + maxRadialRadius);
   }
 
   // method for drawing the position of the player on the Radial

@@ -4,30 +4,46 @@
 GWindow mainWindow;
 GButton webcamToggle1, webcamToggle2, webcamToggle3, webcamToggle4; 
 GButton playButton, recordButton, openButton; 
-GCustomSlider rpmSlider; 
+GCustomSlider radialAreaSlider; 
+GTextField bpmField;
+
+int radialSpacing, radialAreaBorder;
 
 // This method initializes all elements of the main screen
 public void mainGUI() {
 
   // setup for main window
-  mainWindow = GWindow.getWindow(this, "Main Screen", ((width - windowWidth) / 2), ((height - windowHeight) / 2), windowWidth, windowHeight, JAVA2D);
+  mainWindow = GWindow.getWindow(this, "Main Screen", ((width - windowWidth) / 2), ((height - windowHeight) / 2), windowWidth, windowHeight, JAVA2D); //<>//
   mainWindow.setActionOnClose(G4P.EXIT_APP);
-  introWindow.setAlwaysOnTop(true);
+  mainWindow.setAlwaysOnTop(true);
   mainWindow.addDrawHandler(this, "mainWindowDraw");
   mainWindow.addMouseHandler(this, "mainWindowMouse");
   mainWindow.addKeyHandler(this, "mainWindowKey");
   mainWindow.addData(new mainWinData());
   
-  ((mainWinData)mainWindow.data).username = ((introWinData)introWindow.data).username;
-  
-
   G4P.messagesEnabled(false);   // disable messages on all G4P windows
   G4P.setGlobalColorScheme(9);  // Custom scheme
-
+  
+  // start camera
   cam = new Capture(mainWindow, 160, 120);
   cam.start();
+  
+  //Load in a sound files wihin a given folder
+  radialsMinim = new Minim(mainWindow);
+  makeRadialArray(mainWindow, findSoundFilesInDirectory(sketchPath() + "/data"));
+  
+  // get a stereo line-in: sample buffer length of 2048
+  // default sample rate is 44100, default bit depth is 16
+  audioIn = radialsMinim.getLineIn(Minim.STEREO, 2048);
+  // get an output we can playback the recording on
+  audioOut = radialsMinim.getLineOut(Minim.STEREO);
+  
+  // set main window data
+  ((mainWinData)mainWindow.data).username = ((introWinData)introWindow.data).username;
   ((mainWinData)mainWindow.data).bCameraOn = true;
-
+  ((mainWinData)mainWindow.data).lastRadialPosX = radials[radials.length - 1].posX;
+  ((mainWinData)mainWindow.data).BPM = int(audioOut.getTempo());
+  
   // Button declarations and handlers
   webcamToggle1 = new GButton(mainWindow, 45, 270, 80, 30, "Toggle Webcam");
   webcamToggle1.addEventHandler(this, "handleWebcamToggle1");
@@ -53,26 +69,34 @@ public void mainGUI() {
   openButton.setFont(Baskerville16);
 
   // Slider declarations and handlers
-  rpmSlider = new GCustomSlider(mainWindow, 850, 490, 220, 40, "grey_blue");
-  rpmSlider.setLimits(0.5, 0.0, 1.0);
-  rpmSlider.setNumberFormat(G4P.DECIMAL, 2);
-  rpmSlider.setOpaque(false);
-  rpmSlider.addEventHandler(this, "rpmSlider_change1");
-
+  radialAreaSlider = new GCustomSlider(mainWindow, centerGControlX(mainWindow, 220), (mainWindow.height - 100), 220, 40, null);
+  radialAreaSlider.setLimits(0.0f, 0.0f, 1.0f);
+  radialAreaSlider.setNumberFormat(G4P.DECIMAL, 2);
+  radialAreaSlider.setShowDecor(false, false, false, false); //show: opaque, ticks, value, limits
+  radialAreaSlider.addEventHandler(this, "handleRadialAreaSlider");
+  
+  // Text field declarations and handlers
+  bpmField = new GTextField(mainWindow, windowWidth - 150, 545, 100, 36);
+  bpmField.addEventHandler(this, "handleBPMTextField");
+  bpmField.setNumeric(1, 500, -1);
+  bpmField.tag = "bpm";
+  bpmField.setFont(Baskerville24);
+  bpmField.setText(str(((mainWinData)mainWindow.data).BPM));
+  
+  // reused label from intro window resized and moved
   squiggle = new GLabel(mainWindow, 138, 32, 414, 88);
   squiggle.setTextAlign(GAlign.LEFT, null);
   squiggle.setFont(Baskerville64);
   squiggle.setText("SQUIGGLE.io");
-  squiggle.setVisible(true);
-
-  //Load in a sound files wihin a given folder
-  radialsMinim = new Minim(mainWindow);
-  makeRadialArray(mainWindow, findSoundFilesInDirectory(sketchPath() + "/data"));
-  
-  println("Username: " + ((mainWinData)mainWindow.data).username);
-  
+  squiggle.setVisible(true); 
 }
 
+
+/* default method for drawing to G4P main window
+ *
+ * @param app:   name of G4P window (automatically applied)
+ * @param data:  G4P window data (automatically applied)
+ */
 public void mainWindowDraw(PApplet app, GWinData data) {
   mainWinData mainData = (mainWinData)data;  
   
@@ -88,6 +112,11 @@ public void mainWindowDraw(PApplet app, GWinData data) {
   }
 }
 
+/* method for drawing the header for mainWindow
+ *
+ * @param app:   name of G4P window
+ * @param data:  G4P window data
+ */
 void mainHeaderGUI(PApplet app, GWinData data) {
   // main background
   app.background(#E8F4F8);
@@ -100,6 +129,12 @@ void mainHeaderGUI(PApplet app, GWinData data) {
   app.text(frameRate, windowWidth - 10, 10);
 }
 
+
+/* method for updating webcam data to the G4P window
+ *
+ * @param app:   name of G4P window 
+ * @param data:  G4P window data
+ */
 void updateMainCams(PApplet app, GWinData data) {
   mainWinData mainData = (mainWinData)data; 
 
@@ -121,7 +156,12 @@ void updateMainCams(PApplet app, GWinData data) {
       app.text(mainData.username.substring(0, 6) + "...", 45 + (cam.width / 2), 147 + (cam.height / 2));
     }else {
       app.text(mainData.username, 45 + (cam.width / 2), 147 + (cam.height / 2));
-    }
-    
+    }  
   }
+}
+
+// method for later so we can do auto formatting
+void setMainGUIValues() {
+  radialSpacing = 20;
+  radialAreaBorder = 20;
 }
