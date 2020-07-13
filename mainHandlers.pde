@@ -6,7 +6,7 @@ public void mainWindowMouse(PApplet app, GWinData data, MouseEvent event) {
   if (event.getAction() == MouseEvent.RELEASE) {
     for (int i = 0; i < radials.length; i++) {
       radials[i].releaseHandleEvent();
-    }
+    } //<>//
   }
 }
 
@@ -64,7 +64,6 @@ public void handleBPMTextField(GTextField field, GEvent event) {
     
     // if the value input is not valid, set to 120
     if (bpm == -1) {
-      println("setting");
       field.setText("120");
     } else {
       ((mainWinData)mainWindow.data).BPM = bpm;

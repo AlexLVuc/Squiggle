@@ -171,8 +171,8 @@ class soundFile {
 
 void printRadialsData() {
   for (int i = 0; i < radials.length; i++){
-    println("Name: " + radials[i].name);
-    println("File name: " + radials[i].fileName + radials[i].fileType);
-    println("BPM: " + radials[i].BPM);
+    print("Name: " + radials[i].name);
+    print("\tFile name: " + radials[i].fileName + (radials[i].fileType == MP3 ? ".mp3" : ".wav"));
+    println("\tBPM: " + radials[i].BPM);
   }
 }

@@ -50,7 +50,7 @@ void setup() {
   // I need to do this to display the framerate
   frameRate(120);
   windowWidth = 1280;
-  windowHeight = 1080;
+  windowHeight = height - int(height * 0.025f);
 
   //Load in logo png from data folder  
   logo = loadImage("Squiggle_Logo.png");
@@ -72,7 +72,7 @@ class introWinData extends GWinData {
 }
 
 class mainWinData extends GWinData {
-  boolean bCameraOn, bRadialsLoaded;
+  boolean bGUILoaded, bCameraOn, bRadialsLoaded;
   int lastRadialPosX, BPM;
   String username;
 }

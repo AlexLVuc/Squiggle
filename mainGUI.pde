@@ -13,7 +13,7 @@ int radialSpacing, radialAreaBorder;
 public void mainGUI() {
 
   // setup for main window
-  mainWindow = GWindow.getWindow(this, "Main Screen", ((width - windowWidth) / 2), ((height - windowHeight) / 2), windowWidth, windowHeight, JAVA2D);
+  mainWindow = GWindow.getWindow(this, "Main Screen", ((width - windowWidth) / 2), 0, windowWidth, windowHeight, JAVA2D);
   mainWindow.setActionOnClose(G4P.EXIT_APP);
   mainWindow.setAlwaysOnTop(true);
   mainWindow.addDrawHandler(this, "mainWindowDraw");
@@ -39,11 +39,11 @@ public void mainGUI() {
 
   // set main window data
   ((mainWinData)mainWindow.data).username = ((introWinData)introWindow.data).username;
+  ((mainWinData)mainWindow.data).bGUILoaded = false;
   ((mainWinData)mainWindow.data).bCameraOn = true;
   ((mainWinData)mainWindow.data).bRadialsLoaded = false;
   ((mainWinData)mainWindow.data).BPM = 60;
-  
-  println("entering the thing");
+
   makeRadialArray(mainWindow, findSoundFilesInDirectory(sketchPath() + "/data"));
   ((mainWinData)mainWindow.data).bRadialsLoaded = true;
   ((mainWinData)mainWindow.data).lastRadialPosX = radials[radials.length - 1].posX;
@@ -73,7 +73,7 @@ public void mainGUI() {
   openButton.setFont(Baskerville16);
 
   // Slider declarations and handlers
-  radialAreaSlider = new GCustomSlider(mainWindow, centerGControlX(mainWindow, 220), (mainWindow.height - 100), 220, 40, null);
+  radialAreaSlider = new GCustomSlider(mainWindow, centerGControlX(mainWindow, 220), (mainWindow.height - 50), 220, 40, null);
   radialAreaSlider.setLimits(0.0f, 0.0f, 1.0f);
   radialAreaSlider.setNumberFormat(G4P.DECIMAL, 2);
   radialAreaSlider.setShowDecor(false, false, false, false); //show: opaque, ticks, value, limits
@@ -93,8 +93,9 @@ public void mainGUI() {
   squiggle.setFont(Baskerville64);
   squiggle.setText("SQUIGGLE.io");
   squiggle.setVisible(true); 
-    
-  //printRadialsData();
+
+  ((mainWinData)mainWindow.data).bGUILoaded = true;
+  printRadialsData();
 }
 
 
@@ -106,21 +107,26 @@ public void mainGUI() {
 public void mainWindowDraw(PApplet app, GWinData data) {
   mainWinData mainData = (mainWinData)data;  
 
-  mainHeaderGUI(app, data);
+  if (mainData.bGUILoaded) {
+    mainHeaderGUI(app, data);
 
-  // check if cam is avaiable for data
-  try {
-  updateMainCams(app, data);
-  } catch (Exception e) {
-    println("Exception: " + e + " when trying to update cams");
-  }
-
-  // draw radials
-  if (mainData.bRadialsLoaded) {
-    for (int i = 0; i < radials.length; i++) {
-      radials[i].update();
-      radials[i].display(180, NO_COLOR);
+    // check if cam is avaiable for data
+    try {
+      updateMainCams(app, data);
+    } 
+    catch (Exception e) {
+      println("Exception: " + e + " when trying to update cams");
     }
+
+    // draw radials
+    if (mainData.bRadialsLoaded) {
+      for (int i = 0; i < radials.length; i++) {
+        radials[i].update();
+        radials[i].display(180, NO_COLOR);
+      }
+    }
+  } else {
+    mainLoadingGUI(app, data);
   }
 }
 
@@ -141,6 +147,13 @@ void mainHeaderGUI(PApplet app, GWinData data) {
   app.text(frameRate, windowWidth - 10, 10);
 }
 
+void mainLoadingGUI(PApplet app, GWinData data) {
+  app.background(#E8F4F8);
+  app.textSize(48);
+  app.fill(#000050);
+  app.textAlign(CENTER);
+  app.text("Loading...", windowWidth / 2, windowHeight / 2);
+}
 
 /* method for updating webcam data to the G4P window
  *

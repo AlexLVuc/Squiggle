@@ -1,4 +1,4 @@
-/* //<>// //<>// //<>// //<>// //<>//
+/* //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
  * Class made creating, saving and handling radials
  * Creator: Michael Jamieson
  * Date: July 7, 2020
@@ -71,10 +71,10 @@ class Radial {
     if (BPM != 0) {
       float rc = (60f / BPM);
       rateControl = new TickRate(rc);
-      if (rc < 1) rateControl.setInterpolation(true);
-      else rateControl.setInterpolation(false);
+      if (rc < 1)  rateControl.setInterpolation(true); 
+      else         rateControl.setInterpolation(false);
     } else {
-      rateControl = new TickRate();
+      rateControl = new TickRate(1f);
     }
 
     // load the correct file type into the player
