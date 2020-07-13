@@ -13,27 +13,21 @@ public void introWindowKey(PApplet app, GWinData data, KeyEvent event) {
 
   if (introData.bJoin || introData.bCreate) {
     if (event.getKeyCode() == ENTER) {
-      println("Enter Key");
-      // check if username or roomcode fields are blank and prompt the user to input values
-      boolean fieldNotFilled = false;
-      if (nameField.getText().equals("") || nameField.getText().equals(null)) {
-        nameField.setLocalColor(2, #FF0000); // set text color to red
-        nameField.setPromptText("Please Input Your Name");
-        fieldNotFilled = true;
-      }
-      if (roomCodeField.getText().equals("") || roomCodeField.getText().equals(null)) {
-        roomCodeField.setLocalColor(2, #FF0000); // set text color to red
-        roomCodeField.setPromptText("Please Input Room Code");
-        fieldNotFilled = true;
-      }
-      if (!fieldNotFilled) {
-        ((introWinData)introWindow.data).username = nameField.getText();
-        introWindow.close();
-        setMainGUIValues();
-        mainGUI();
-      }
+      checkForValidInputs();
     }
   }
+}
+
+public void handleRoomCodeTextField(GTextField field, GEvent event) { 
+ if (event == GEvent.GETS_FOCUS) {
+   roomCodeField.setLocalColor(2, #000050);
+ }
+}
+
+public void handleNameTextField(GTextField field, GEvent event) { 
+ if (event == GEvent.GETS_FOCUS) {
+   nameField.setLocalColor(2, #000050);
+ }
 }
 
 public void handleBtnJoinSession(GButton button, GEvent event) {
@@ -63,24 +57,7 @@ public void handleBtnClipboard (GButton button, GEvent event) {
 }
 
 public void handleBtnPlay (GButton button, GEvent event) {
-  // check if username or roomcode fields are blank and prompt the user to input values
-  boolean fieldNotFilled = false;
-  if (nameField.getText().equals("") || nameField.getText().equals(null)) {
-    nameField.setLocalColor(2, #FF0000); // set text color to red
-    nameField.setPromptText("Please Input Your Name");
-    fieldNotFilled = true;
-  }
-  if (roomCodeField.getText().equals("") || roomCodeField.getText().equals(null)) {
-    roomCodeField.setLocalColor(2, #FF0000); // set text color to red
-    roomCodeField.setPromptText("Please Input Room Code");
-    fieldNotFilled = true;
-  }
-  if (!fieldNotFilled) {
-    ((introWinData)introWindow.data).username = nameField.getText();
-    introWindow.close();
-    setMainGUIValues();
-    mainGUI();
-  }
+  checkForValidInputs();
 }
 
 public void handleBtnBack (GButton button, GEvent event) {
@@ -109,5 +86,28 @@ public void handleBtnBack (GButton button, GEvent event) {
       // and having the password already in the text field
       roomCodeField.setText("");
     }
+  }
+}
+
+void checkForValidInputs() {
+  // check if username or roomcode fields are blank and prompt the user to input values
+  boolean fieldNotFilled = false;
+  String roomCodeText = roomCodeField.getText();
+  String nameText = nameField.getText();
+  if (nameText.equals("") || nameText.equals(" ") || nameText.equals(null)) {
+    nameField.setLocalColor(2, #FF0000); // set text color to red
+    nameField.setPromptText("Please Input Your Name");
+    fieldNotFilled = true;
+  }
+  if (roomCodeText.equals("") || roomCodeText.equals(" ") || roomCodeText.equals(null)) {
+    roomCodeField.setLocalColor(2, #FF0000); // set text color to red
+    roomCodeField.setPromptText("Please Input Room Code");
+    fieldNotFilled = true;
+  }
+  if (!fieldNotFilled) {
+    ((introWinData)introWindow.data).username = nameField.getText();
+    introWindow.close();
+    setMainGUIValues();
+    mainGUI();
   }
 }

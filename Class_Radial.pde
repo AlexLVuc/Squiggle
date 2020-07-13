@@ -1,4 +1,4 @@
-/*
+/* //<>// //<>// //<>// //<>// //<>//
  * Class made creating, saving and handling radials
  * Creator: Michael Jamieson
  * Date: July 7, 2020
@@ -25,10 +25,12 @@ class Radial {
   final int maxArraySize = 720;
 
   PApplet app;
-  AudioPlayer sound;
+  FilePlayer sound;
+  TickRate rateControl;
   String name, fileName, filePath;
-  int posX, posY, fileType, soundLength;
-  float[] sampleArray, frequencyArray;
+  int posX, posY, fileType, soundLength, BPM;
+  float[] sampleArray;
+  int[] frequencyArray;
   Radial[] others;
 
   boolean bOverHandle = false;
@@ -60,26 +62,36 @@ class Radial {
     others = others_;
 
     // check for data array files
-    if (!checkForArrayFile("_s")) {
-      createArrayFile(createSampleArray(), "_s");
+    if (!checkForDataFile()) {
+      createDataFile(createSampleArray(), createFrequencyArray());
+    } else {   
+      loadDataFromFile();
     }
-    if (!checkForArrayFile("_f")) {
-      createArrayFile(createFrequencyArray(), "_f");
+
+    if (BPM != 0) {
+      float rc = (60f / BPM);
+      rateControl = new TickRate(rc);
+      if (rc < 1) rateControl.setInterpolation(true);
+      else rateControl.setInterpolation(false);
+    } else {
+      rateControl = new TickRate();
     }
-    sampleArray = createArrayFromFile("_s");
-    frequencyArray = createArrayFromFile("_f");
 
     // load the correct file type into the player
     if (fileType == MP3) { 
       try {
-        sound = radialsMinim.loadFile(fileName + ".mp3");
-      } catch (Exception e) {
+        sound = new FilePlayer(radialsMinim.loadFileStream(fileName + ".mp3"));
+        sound.patch(rateControl).patch(audioOut);
+      } 
+      catch (Exception e) {
         println("Exception: " + e + " when attempting to load " + fileName + ".mp3");
       }
     } else {
       try {
-        sound = radialsMinim.loadFile(fileName + ".wav");
-      } catch (Exception e) {
+        sound = new FilePlayer(radialsMinim.loadFileStream(fileName + ".wav"));
+        sound.patch(rateControl).patch(audioOut);
+      } 
+      catch (Exception e) {
         println("Exception: " + e + " when attempting to load " + fileName + ".wav");
       }
     }
@@ -101,13 +113,13 @@ class Radial {
    *
    * @param fileSuffix:  suffix of the file being written to
    */
-  boolean checkForArrayFile(String fileSuffix) {
-    File f = new File(sketchPath() + "/data/" + fileName + fileSuffix + ".txt");
+  boolean checkForDataFile() {
+    File f = new File(sketchPath() + "/data/soundData/" + fileName + ".csv");
     if (f.exists()) {
-      println(fileName + fileSuffix + ".txt found");
+      println(fileName + ".csv found");
       return true;
     } else {
-      println(fileName + fileSuffix + ".txt not found");
+      println(fileName+ ".csv not found");
       return false;
     }
   }
@@ -117,45 +129,52 @@ class Radial {
    * @param array[]:   float array to be written to the file
    * @param fileSuffix:  suffix of the file being written to
    */
-  void createArrayFile(float[] array, String fileSuffix) {
-    println("Creating array file at:\t" + sketchPath() + "data\\" + fileName + fileSuffix + ".txt");
-    PrintWriter output = createWriter("data\\" + fileName + fileSuffix + ".txt");
-    for (int i = 0; i < array.length; i++) {
-      output.println(array[i]);
-    }
-    output.flush();
-    output.close();
-  }
+  void createDataFile(float[] arrayS, int[] arrayF) {
+    println("Creating data file at:\t" + sketchPath() + "\\data\\soundData\\" + fileName + ".csv");
+    Table dataTable = new Table();
+    TableRow newRow;
 
-  /* method for creating a file containing float values of the radial
-   *
-   * @param array[]:   int array to be written to the file
-   * @param fileSuffix:  suffix of the file being written to
-   */
-  void createArrayFile(int[] array, String fileSuffix) {
-    println("Creating array file at:\t" + sketchPath() + "data\\" + fileName + fileSuffix + ".txt");
-    PrintWriter output = createWriter("data\\" + fileName + fileSuffix + ".txt");
-    for (int i = 0; i < array.length; i++) {
-      output.println(array[i]);
+    sampleArray = new float[maxArraySize];
+    frequencyArray = new int[maxArraySize];
+
+    dataTable.addColumn("samples");
+    dataTable.addColumn("frequencies");
+    dataTable.addColumn("BPM");
+
+    for (int i = 0; i < maxArraySize; i++) {
+      newRow = dataTable.addRow();
+      newRow.setFloat("samples", arrayS[i]);
+      newRow.setInt("frequencies", arrayF[i]);
+      sampleArray[i] = arrayS[i];
+      frequencyArray[i] = arrayF[i];
     }
-    output.flush();
-    output.close();
+
+    saveTable(dataTable, "data/soundData/" + fileName + ".csv");
   }
 
   /* method for creating a float array from a txt file data
    *
    * @param fileSuffix:  suffix of the file being written to
    */
-  float[] createArrayFromFile(String fileSuffix) {
-    println("Creating array from file at:\t" + sketchPath() + "data\\" + fileName + fileSuffix + ".txt");
-    float[] returnArray = new float[maxArraySize];
+  void loadDataFromFile() {
+    println("loading data from file at:\t" + sketchPath() + "\\data\\soundData\\" + fileName + ".csv");
 
-    // read the data from the specified file and convert to float array
-    String[] fileData = loadStrings(fileName + fileSuffix + ".txt");
-    for (int i = 0; i < fileData.length; i++) {
-      returnArray[i] = float(fileData[i]);
+    sampleArray = new float[maxArraySize];
+    frequencyArray = new int[maxArraySize];
+
+    // load csv to table
+    Table dataTable = loadTable("soundData/" + fileName + ".csv", "header");
+    TableRow row;
+
+    // read the data from the specified file and set to Radial arrays
+    for (int i = 0; i < maxArraySize; i++) {
+      row = dataTable.getRow(i);
+      sampleArray[i] = row.getFloat("samples");
+      frequencyArray[i] = row.getInt("frequencies");
     }
-    return returnArray;
+
+    row = dataTable.getRow(0);
+    BPM = row.getInt("BPM");
   }
 
   // method for reducing the samples in an mp3 or wav file to 720 values
@@ -200,6 +219,7 @@ class Radial {
         if (curArraySpot == maxArraySize - 1) break;
       }
     }
+    tempSample.close();
     return reducedSamples;
   }
 
@@ -278,6 +298,7 @@ class Radial {
     for (int i = 0; i < maxArraySize; i++) {
       frequencyArray[i] = fftValues[int(i * scalingFactor)];
     }
+    tempSample.close();
     return frequencyArray;
   }
 
@@ -300,14 +321,14 @@ class Radial {
       n = 720;
     }
     drawRadial(n, c);
-    
+
     if (bOverHandle || bPressHandle) {   
       // used for drawing handle area aroudn the Radial
       app.noFill();
       app.stroke(0);
       app.circle(posX, posY, handleRadius*2);
     }
-    
+
     if (sound.isPlaying()) {
       drawRadialPosition();
     }
@@ -365,29 +386,26 @@ class Radial {
     int ratio = maxArraySize / displayPoints;
 
     for (int pPos = 0; pPos < displayPoints; pPos++) {
-      
+
       // get color values for stroke
       // currently broken
       if (colorScheme == NO_COLOR) {
-        cf = color(0,0,0);
+        cf = color(0, 0, 0);
       } else if (colorScheme == COLOR) {
         float scalar = map(frequencyArray[pPos * ratio], 0, 400, 0, 100); 
         if (scalar >= 75) {
           c1 = color(255, 236, 0);  //#ffec00 yellow
           c2 = color(179, 0, 0);    //#b30000 red
           cf = lerpColor(c1, c2, ((scalar - 75.0) / 25.0));
-        }
-        else if (scalar >= 50) {
+        } else if (scalar >= 50) {
           c1 = color(40, 255, 0);  //#28ff00 green
           c2 = color(255, 236, 0); //#ffec00 yellow
           cf = lerpColor(c1, c2, ((scalar - 50.0) / 25.0));
-        }
-        else if (scalar >= 25) {
+        } else if (scalar >= 25) {
           c1 = color(5, 0, 255);   //#0500ff blue
           c2 = color(40, 255, 0);  //#28ff00 green
           cf = lerpColor(c1, c2, ((scalar - 75.0) / 100.0));
-        }
-        else {
+        } else {
           c1 = color(87, 0, 158);   //#57009e purple
           c2 = color(5, 0, 255);   //#0500ff blue
           cf = lerpColor(c1, c2, ((scalar - 75.0) / 100.0));
@@ -398,7 +416,7 @@ class Radial {
 
       //println("r:\t" + rc + "\tg:\t" + gc + "\tb:\t" + bc);
       app.stroke(cf);  
-      
+
       // map the radius of the point between the max and min values of the file, 
       // and the max and min display range
       r = map(sampleArray[pPos * ratio], arrayMin, arrayMax, minRadialRadius, maxRadialRadius);
@@ -419,7 +437,7 @@ class Radial {
       app.curveVertex(x, y);
     }
     app.endShape();
-    
+
     // center Radial name at bottom of Radial
     app.fill(0);
     app.textSize(12);
@@ -497,14 +515,21 @@ class Radial {
    * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    */
 
-  // play the sound
   void play() {
     //play from time 0
     sound.play(0);
   }
 
-  //pause the sound
   void pause() {
     sound.pause();
+  }
+
+  void updateRadialBPM(int bpm) {
+    if (BPM != 0) {
+      float rc = (float(bpm) / BPM);
+      rateControl.value.setLastValue(rc);
+      if (rc < 1) rateControl.setInterpolation(true);
+      else rateControl.setInterpolation(false);
+    }
   }
 } 

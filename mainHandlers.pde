@@ -62,14 +62,17 @@ public void handleBPMTextField(GTextField field, GEvent event) {
   if (event == GEvent.LOST_FOCUS) {
     int bpm = field.getValueI();
     
-    
     // if the value input is not valid, set to 120
     if (bpm == -1) {
       println("setting");
       field.setText("120");
     } else {
-      ((mainWinData)mainWindow.data).BPM = bpm; 
-      audioOut.setTempo(bpm);
+      ((mainWinData)mainWindow.data).BPM = bpm;
+      
+      for (int i = 0; i < radials.length; i++) {
+        radials[i].updateRadialBPM(bpm);
+      }
     }
+    field.setLocalColorScheme(9);
   }
 }

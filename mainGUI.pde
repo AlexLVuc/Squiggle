@@ -13,37 +13,41 @@ int radialSpacing, radialAreaBorder;
 public void mainGUI() {
 
   // setup for main window
-  mainWindow = GWindow.getWindow(this, "Main Screen", ((width - windowWidth) / 2), ((height - windowHeight) / 2), windowWidth, windowHeight, JAVA2D); //<>//
+  mainWindow = GWindow.getWindow(this, "Main Screen", ((width - windowWidth) / 2), ((height - windowHeight) / 2), windowWidth, windowHeight, JAVA2D);
   mainWindow.setActionOnClose(G4P.EXIT_APP);
   mainWindow.setAlwaysOnTop(true);
   mainWindow.addDrawHandler(this, "mainWindowDraw");
   mainWindow.addMouseHandler(this, "mainWindowMouse");
   mainWindow.addKeyHandler(this, "mainWindowKey");
   mainWindow.addData(new mainWinData());
-  
+
   G4P.messagesEnabled(false);   // disable messages on all G4P windows
   G4P.setGlobalColorScheme(9);  // Custom scheme
-  
+
   // start camera
   cam = new Capture(mainWindow, 160, 120);
   cam.start();
-  
+
   //Load in a sound files wihin a given folder
   radialsMinim = new Minim(mainWindow);
-  makeRadialArray(mainWindow, findSoundFilesInDirectory(sketchPath() + "/data"));
-  
+
   // get a stereo line-in: sample buffer length of 2048
   // default sample rate is 44100, default bit depth is 16
   audioIn = radialsMinim.getLineIn(Minim.STEREO, 2048);
   // get an output we can playback the recording on
-  audioOut = radialsMinim.getLineOut(Minim.STEREO);
-  
+  audioOut = radialsMinim.getLineOut(Minim.STEREO);  
+
   // set main window data
   ((mainWinData)mainWindow.data).username = ((introWinData)introWindow.data).username;
   ((mainWinData)mainWindow.data).bCameraOn = true;
-  ((mainWinData)mainWindow.data).lastRadialPosX = radials[radials.length - 1].posX;
-  ((mainWinData)mainWindow.data).BPM = int(audioOut.getTempo());
+  ((mainWinData)mainWindow.data).bRadialsLoaded = false;
+  ((mainWinData)mainWindow.data).BPM = 60;
   
+  println("entering the thing");
+  makeRadialArray(mainWindow, findSoundFilesInDirectory(sketchPath() + "/data"));
+  ((mainWinData)mainWindow.data).bRadialsLoaded = true;
+  ((mainWinData)mainWindow.data).lastRadialPosX = radials[radials.length - 1].posX;
+
   // Button declarations and handlers
   webcamToggle1 = new GButton(mainWindow, 45, 270, 80, 30, "Toggle Webcam");
   webcamToggle1.addEventHandler(this, "handleWebcamToggle1");
@@ -74,7 +78,7 @@ public void mainGUI() {
   radialAreaSlider.setNumberFormat(G4P.DECIMAL, 2);
   radialAreaSlider.setShowDecor(false, false, false, false); //show: opaque, ticks, value, limits
   radialAreaSlider.addEventHandler(this, "handleRadialAreaSlider");
-  
+
   // Text field declarations and handlers
   bpmField = new GTextField(mainWindow, windowWidth - 150, 545, 100, 36);
   bpmField.addEventHandler(this, "handleBPMTextField");
@@ -82,13 +86,15 @@ public void mainGUI() {
   bpmField.tag = "bpm";
   bpmField.setFont(Baskerville24);
   bpmField.setText(str(((mainWinData)mainWindow.data).BPM));
-  
+
   // reused label from intro window resized and moved
   squiggle = new GLabel(mainWindow, 138, 32, 414, 88);
   squiggle.setTextAlign(GAlign.LEFT, null);
   squiggle.setFont(Baskerville64);
   squiggle.setText("SQUIGGLE.io");
   squiggle.setVisible(true); 
+    
+  //printRadialsData();
 }
 
 
@@ -99,16 +105,22 @@ public void mainGUI() {
  */
 public void mainWindowDraw(PApplet app, GWinData data) {
   mainWinData mainData = (mainWinData)data;  
-  
+
   mainHeaderGUI(app, data);
-  
+
   // check if cam is avaiable for data
+  try {
   updateMainCams(app, data);
+  } catch (Exception e) {
+    println("Exception: " + e + " when trying to update cams");
+  }
 
   // draw radials
-  for (int i = 0; i < radials.length; i++) {
-    radials[i].update();
-    radials[i].display(180, NO_COLOR);
+  if (mainData.bRadialsLoaded) {
+    for (int i = 0; i < radials.length; i++) {
+      radials[i].update();
+      radials[i].display(180, NO_COLOR);
+    }
   }
 }
 
@@ -154,9 +166,9 @@ void updateMainCams(PApplet app, GWinData data) {
     // if the username is larger than 9 characters, display the first 6 and "..."
     if (mainData.username.length() > 9) {
       app.text(mainData.username.substring(0, 6) + "...", 45 + (cam.width / 2), 147 + (cam.height / 2));
-    }else {
+    } else {
       app.text(mainData.username, 45 + (cam.width / 2), 147 + (cam.height / 2));
-    }  
+    }
   }
 }
 

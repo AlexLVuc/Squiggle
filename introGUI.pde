@@ -10,7 +10,8 @@ GButton joinSession, createSession, takeATour, clipboard, play, back;
 GTextField roomCodeField, nameField;
 GLabel squiggle, roomCodeLabel, nameLabel;
 
-int introButLargeW, introButLargeH, introButSmallW, introButSmallH, introFieldW, introFieldH;
+int introButLargeW, introButLargeH, introButSmallW, introButSmallH, introFieldW, introFieldH,
+    introLineLength;
 
 //This method initializes all elements of the intro screen
 public void introGUI() {
@@ -63,13 +64,11 @@ public void introGUI() {
   // Text field declarations
   roomCodeField = new GTextField(introWindow, centerGControlX(introWindow, introFieldW), 348, introFieldW, introFieldH);
   roomCodeField.addEventHandler(this, "handleRoomCodeTextField");
-  roomCodeField.tag = "roomCode";
   roomCodeField.setFont(Baskerville24);
   roomCodeField.setPromptText("Input Room Code");
   roomCodeField.setVisible(false);
   nameField = new GTextField(introWindow, centerGControlX(introWindow, introFieldW), 443, introFieldW, introFieldH);
   nameField.addEventHandler(this, "handleNameTextField");
-  nameField.tag = "name";
   nameField.setFont(Baskerville24);
   nameField.setPromptText("Input Your Name");
   nameField.setVisible(false);
@@ -128,7 +127,7 @@ void introHeaderGUI(PApplet app, GWinData data) {
   // Line under logo
   app.strokeWeight(2);
   app.stroke(#69D2E7);
-  app.line(315, 286, 315 + 711, 286);
+  app.line((windowWidth / 2) - (introLineLength / 2), 286, (windowWidth / 2) + (introLineLength / 2), 286);
 
   // decided to display frame rate, just for shits
   app.fill(0);
@@ -218,4 +217,5 @@ void setIntroGUIValues() {
   introFieldH = 40;
   introButSmallW = 101;
   introButSmallH = 41;
+  introLineLength = 711;
 }

@@ -3,6 +3,7 @@ import processing.video.*;
 
 // for FFT
 import ddf.minim.*; 
+import ddf.minim.spi.*;
 import ddf.minim.analysis.*;
 import ddf.minim.ugens.*;
 
@@ -50,9 +51,6 @@ void setup() {
   frameRate(120);
   windowWidth = 1280;
   windowHeight = 1080;
-  
-  
-  
 
   //Load in logo png from data folder  
   logo = loadImage("Squiggle_Logo.png");
@@ -62,8 +60,7 @@ void setup() {
 }
 
 
-void draw() {
-    
+void draw() {  
 }
 
 
@@ -75,7 +72,7 @@ class introWinData extends GWinData {
 }
 
 class mainWinData extends GWinData {
-  boolean bCameraOn;
+  boolean bCameraOn, bRadialsLoaded;
   int lastRadialPosX, BPM;
   String username;
 }

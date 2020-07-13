@@ -85,10 +85,9 @@ void printLoadedAudioSampleInfo(AudioSample file) {
 
 // print data of an AudioPlayer
 // this is less data than the AudioSample
-void printLoadedAudioFileInfo(AudioPlayer file) {
+void printLoadedAudioFileInfo(FilePlayer file) {
   println("AUDIO FILE INFO");
   println("Length of file: " + (file.length() / 1000.0) + " seconds");
-  println("Buffer size: " + round(file.bufferSize()) + "\n");
 }
 
 
@@ -167,5 +166,13 @@ class soundFile {
     else if (fileType_.equals(".wav")) {
       fileType = WAV;
     }
+  }
+}
+
+void printRadialsData() {
+  for (int i = 0; i < radials.length; i++){
+    println("Name: " + radials[i].name);
+    println("File name: " + radials[i].fileName + radials[i].fileType);
+    println("BPM: " + radials[i].BPM);
   }
 }
