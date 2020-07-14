@@ -8,6 +8,7 @@ GCustomSlider radialAreaSlider;
 GTextField bpmField;
 
 int radialSpacing, radialAreaBorder;
+int trackWindowX, trackWindowY, trackWindowW, trackWindowH;
 
 // This method initializes all elements of the main screen
 public void mainGUI() {
@@ -20,9 +21,6 @@ public void mainGUI() {
   mainWindow.addMouseHandler(this, "mainWindowMouse");
   mainWindow.addKeyHandler(this, "mainWindowKey");
   mainWindow.addData(new mainWinData());
-
-  G4P.messagesEnabled(false);   // disable messages on all G4P windows
-  G4P.setGlobalColorScheme(9);  // Custom scheme
 
   // start camera
   cam = new Capture(mainWindow, 160, 120);
@@ -46,7 +44,7 @@ public void mainGUI() {
 
   makeRadialArray(mainWindow, findSoundFilesInDirectory(sketchPath() + "/data"));
   ((mainWinData)mainWindow.data).bRadialsLoaded = true;
-  ((mainWinData)mainWindow.data).lastRadialPosX = radials[radials.length - 1].posX;
+  ((mainWinData)mainWindow.data).lastRadialPosX = radials[radials.length - 1].curPosX;
 
   // Button declarations and handlers
   webcamToggle1 = new GButton(mainWindow, 45, 270, 80, 30, "Toggle Webcam");
@@ -80,7 +78,7 @@ public void mainGUI() {
   radialAreaSlider.addEventHandler(this, "handleRadialAreaSlider");
 
   // Text field declarations and handlers
-  bpmField = new GTextField(mainWindow, windowWidth - 150, 545, 100, 36);
+  bpmField = new GTextField(mainWindow, windowWidth - 150, 750, 100, 36);
   bpmField.addEventHandler(this, "handleBPMTextField");
   bpmField.setNumeric(1, 500, -1);
   bpmField.tag = "bpm";
@@ -93,7 +91,8 @@ public void mainGUI() {
   squiggle.setFont(Baskerville64);
   squiggle.setText("SQUIGGLE.io");
   squiggle.setVisible(true); 
-
+  
+  track1 = new Track(mainWindow, trackWindowX, trackWindowY, trackWindowW, trackWindowH);
   ((mainWinData)mainWindow.data).bGUILoaded = true;
   printRadialsData();
 }
@@ -124,6 +123,8 @@ public void mainWindowDraw(PApplet app, GWinData data) {
         radials[i].update();
         radials[i].display(180, NO_COLOR);
       }
+      track1.update();
+      track1.display(180, NO_COLOR); //<>// //<>//
     }
   } else {
     mainLoadingGUI(app, data);
@@ -144,9 +145,21 @@ void mainHeaderGUI(PApplet app, GWinData data) {
   app.fill(0);
   app.textSize(12);
   app.textAlign(RIGHT, TOP);
-  app.text(frameRate, windowWidth - 10, 10);
+  app.text(frameRate, windowWidth - 10, 10); 
+  // Radial area background
+  app.noStroke();
+  app.fill(150);
+  app.rect(0, (windowHeight - 228), windowWidth, 3);
+  app.fill(255);
+  app.rect(0, (windowHeight - 225), windowWidth, windowHeight);
 }
 
+
+/* method for drawing loading screen while mainGUI is loading
+ *
+ * @param app:   name of G4P window
+ * @param data:  G4P window data
+ */
 void mainLoadingGUI(PApplet app, GWinData data) {
   app.background(#E8F4F8);
   app.textSize(48);
@@ -189,4 +202,8 @@ void updateMainCams(PApplet app, GWinData data) {
 void setMainGUIValues() {
   radialSpacing = 20;
   radialAreaBorder = 20;
+  trackWindowX = 490;
+  trackWindowY = 147;
+  trackWindowW = windowWidth - trackWindowX;
+  trackWindowH = 560;
 }

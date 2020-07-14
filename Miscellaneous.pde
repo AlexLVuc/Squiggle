@@ -100,7 +100,7 @@ void makeRadialArray(PApplet app, ArrayList<soundFile> arrayList) {
   radials = new Radial[arrayList.size()];
   for (int i = arrayList.size() - 1; i >= 0; i--) {
     soundFile file = arrayList.get(i);
-    radials[i] = new Radial(app, file.name, file.name, file.fileType, (maxRadialRadius * ((2 * i) + 1)) + (radialSpacing * i) + radialAreaBorder, 900, radials);
+    radials[i] = new Radial(app, file.name, file.name, file.fileType, (maxRadialRadius * ((2 * i) + 1)) + (radialSpacing * i) + radialAreaBorder, 900, radials, false);
     arrayList.remove(i);
   } 
 }

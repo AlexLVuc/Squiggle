@@ -1,5 +1,5 @@
-/* //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>// //<>//
- * Class made creating, saving and handling radials
+/*  //<>//
+ * Class made for creating, saving and handling radials
  * Creator: Michael Jamieson
  * Date: July 7, 2020
  */
@@ -28,7 +28,8 @@ class Radial {
   FilePlayer sound;
   TickRate rateControl;
   String name, fileName, filePath;
-  int posX, posY, fileType, soundLength, BPM;
+  int orgPosX, orgPosY, curPosX, curPosY, fileType, soundLength, BPM;
+  float curRC;
   float[] sampleArray;
   int[] frequencyArray;
   Radial[] others;
@@ -41,40 +42,48 @@ class Radial {
   float lastHandlePressTime = 0;
   int handleRadius = maxRadialRadius;
 
-  /* Contructor for a radial object
+  /* Contructor for a Radial object
    * 
    * @param app_:       PApplet (or window) the Radial exists on
    * @param name_:      name of radial file to eb displayed
    * @param fileName_:  file name of sound file
    * @param fileType_:  file type of sound file
-   * @param posx_:      x position of center of radial
-   * @param posy_:      y position of center of radial
+   * @param curPosX_:      x position of center of radial
+   * @param curPosY_:      y position of center of radial
    * @param others_:    array of other radials in a window to check from drag and drop activity
    */
-  Radial(PApplet app_, String name_, String fileName_, int fileType_, int posx_, int posy_, Radial[] others_) {
+  Radial(PApplet app_, String name_, String fileName_, int fileType_, int curPosX_, int curPosY_, Radial[] others_, boolean copy) {
     app = app_;
     name = name_;
     fileName = fileName_;
     fileType = fileType_;
-    posX = posx_;
-    posY = posy_;
+    curPosX = orgPosX = curPosX_;
+    curPosY = orgPosY = curPosY_;
     filePath = ""; //NEED TO CHANGE
     others = others_;
+    
+    sampleArray = new float[maxArraySize];
+    frequencyArray = new int[maxArraySize];
+    rateControl = new TickRate(1f);
+    
+    // only load info from file if you're not copying it to a track
+    if (!copy) {
+      // check for data array files
+      if (!checkForDataFile()) {
+        createDataFile(createSampleArray(), createFrequencyArray());
+      } else {   
+        loadDataFromFile();
+      }
 
-    // check for data array files
-    if (!checkForDataFile()) {
-      createDataFile(createSampleArray(), createFrequencyArray());
-    } else {   
-      loadDataFromFile();
-    }
-
-    if (BPM != 0) {
-      float rc = (60f / BPM);
-      rateControl = new TickRate(rc);
-      if (rc < 1)  rateControl.setInterpolation(true); 
-      else         rateControl.setInterpolation(false);
-    } else {
-      rateControl = new TickRate(1f);
+      if (BPM != 0) {
+        curRC = (60f / BPM);
+        rateControl.value.setLastValue(curRC);
+        if (curRC < 1)  rateControl.setInterpolation(true); 
+        else            rateControl.setInterpolation(false);
+      } else {
+        curRC = 1f;
+        rateControl.value.setLastValue(1f);
+      }
     }
 
     // load the correct file type into the player
@@ -109,7 +118,7 @@ class Radial {
    * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    */
 
-  /* method for checkign whether an array data file exists
+  /* method for checking whether an array data file exists
    *
    * @param fileSuffix:  suffix of the file being written to
    */
@@ -134,9 +143,6 @@ class Radial {
     Table dataTable = new Table();
     TableRow newRow;
 
-    sampleArray = new float[maxArraySize];
-    frequencyArray = new int[maxArraySize];
-
     dataTable.addColumn("samples");
     dataTable.addColumn("frequencies");
     dataTable.addColumn("BPM");
@@ -159,9 +165,6 @@ class Radial {
   void loadDataFromFile() {
     println("loading data from file at:\t" + sketchPath() + "\\data\\soundData\\" + fileName + ".csv");
 
-    sampleArray = new float[maxArraySize];
-    frequencyArray = new int[maxArraySize];
-
     // load csv to table
     Table dataTable = loadTable("soundData/" + fileName + ".csv", "header");
     TableRow row;
@@ -171,10 +174,8 @@ class Radial {
       row = dataTable.getRow(i);
       sampleArray[i] = row.getFloat("samples");
       frequencyArray[i] = row.getInt("frequencies");
-    }
-
-    row = dataTable.getRow(0);
-    BPM = row.getInt("BPM");
+      if (i == 0) BPM = row.getInt("BPM");
+    }    
   }
 
   // method for reducing the samples in an mp3 or wav file to 720 values
@@ -326,7 +327,7 @@ class Radial {
       // used for drawing handle area aroudn the Radial
       app.noFill();
       app.stroke(0);
-      app.circle(posX, posY, handleRadius*2);
+      app.circle(curPosX, curPosY, handleRadius*2);
     }
 
     if (sound.isPlaying()) {
@@ -359,8 +360,8 @@ class Radial {
       // dont't update the postition until we are sure they arent trying to play the Radial sound      
       if ((millis() - lastHandlePressTime) > timeToClick) {
         // update the center draw position to a position on the screen
-        posX = keepOnScreen(app.mouseX, handleRadius, (windowWidth - handleRadius));
-        posY = keepOnScreen(app.mouseY, handleRadius, (windowHeight - handleRadius));
+        curPosX = keepOnScreen(app.mouseX, handleRadius, (windowWidth - handleRadius));
+        curPosY = keepOnScreen(app.mouseY, handleRadius, (windowHeight - handleRadius));
       }
     }
   }
@@ -369,8 +370,6 @@ class Radial {
    *
    * @param displayPoints:  number of data points used in drawing the radial
    * @param colorScheme:    colorscheme for frequency data
-   *
-   * TODO: add mapping for color schemes
    */
   void drawRadial(int displayPoints, int colorScheme) {
     color c1, c2, cf;
@@ -420,8 +419,8 @@ class Radial {
       // map the radius of the point between the max and min values of the file, 
       // and the max and min display range
       r = map(sampleArray[pPos * ratio], arrayMin, arrayMax, minRadialRadius, maxRadialRadius);
-      x = posX + (r * cos(radians(((360.0 / displayPoints) * pPos) - 90.0)));
-      y = posY + (r * sin(radians(((360.0 / displayPoints) * pPos) - 90.0)));
+      x = curPosX + (r * cos(radians(((360.0 / displayPoints) * pPos) - 90.0)));
+      y = curPosY + (r * sin(radians(((360.0 / displayPoints) * pPos) - 90.0)));
 
       // if this is the first point, add an extra vertex handle
       if (pPos == 0) {
@@ -430,8 +429,8 @@ class Radial {
       // if we are at the end, make the final point the same as the first point
       if (pPos == (displayPoints - 1)) {
         r = map(sampleArray[0], arrayMin, arrayMax, minRadialRadius, maxRadialRadius);
-        x = posX + (r * cos(radians(-90)));
-        y = posY + (r * sin(radians(-90)));
+        x = curPosX + (r * cos(radians(-90)));
+        y = curPosY + (r * sin(radians(-90)));
         app.curveVertex(x, y);
       }
       app.curveVertex(x, y);
@@ -442,17 +441,17 @@ class Radial {
     app.fill(0);
     app.textSize(12);
     app.textAlign(CENTER, TOP);
-    app.text(fileName, posX, posY + maxRadialRadius);
+    app.text(fileName, curPosX, curPosY + maxRadialRadius);
   }
 
   // method for drawing the position of the player on the Radial
   void drawRadialPosition() { 
     float pos = map(sound.position(), 0, soundLength, 0, maxArraySize);
-    float x2 = posX + (handleRadius * cos(radians(((360.0 / maxArraySize) * pos) - 90)));
-    float y2 = posY + (handleRadius * sin(radians(((360.0 / maxArraySize) * pos) - 90)));
+    float x2 = curPosX + (handleRadius * cos(radians(((360.0 / maxArraySize) * pos) - 90)));
+    float y2 = curPosY + (handleRadius * sin(radians(((360.0 / maxArraySize) * pos) - 90)));
     app.stroke(0, 200, 0);
     app.strokeWeight(1);
-    app.line(posX, posY, x2, y2);
+    app.line(curPosX, curPosY, x2, y2);
   }
 
   // event method for handling if the mouse is over the handle
@@ -480,8 +479,6 @@ class Radial {
 
   // method for handling if the handle has been released
   void releaseHandleEvent() {
-    bActiveHandle = false;
-
     // if the Radial was clicked instead of held play the sound
     if ((millis() - lastHandlePressTime) < timeToClick) {
       if (sound.isPlaying()) {
@@ -489,13 +486,25 @@ class Radial {
       } else {
         play();
       }
+    } else {
+      // check if this radial was the active one
+      if (bActiveHandle) {
+        // check if the Radial has been released in the track window
+        if (track1.overTrack(curPosX, curPosY)) {
+          println("new Radial being added: " + fileName);
+          track1.addRadial(this);
+        }
+        curPosX = orgPosX;
+        curPosY = orgPosY;
+      }
     }
+    bActiveHandle = false;
     bFirstTimeValue = false;
   }
 
   // method for checking if mouse position is over the handle
   boolean overHandle() {
-    if (sqrt(sq(app.mouseX - posX) + sq(app.mouseY - posY)) <= handleRadius) {
+    if (sqrt(sq(app.mouseX - curPosX) + sq(app.mouseY - curPosY)) <= handleRadius) {
       return true;
     } else {
       return false;
@@ -506,7 +515,7 @@ class Radial {
   int keepOnScreen(int mousePos, int minPos, int maxPos) { 
     return  min(max(mousePos, minPos), maxPos);
   }
-
+  
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    *
@@ -526,9 +535,9 @@ class Radial {
 
   void updateRadialBPM(int bpm) {
     if (BPM != 0) {
-      float rc = (float(bpm) / BPM);
-      rateControl.value.setLastValue(rc);
-      if (rc < 1) rateControl.setInterpolation(true);
+      curRC = (float(bpm) / BPM);
+      rateControl.value.setLastValue(curRC);
+      if (curRC < 1) rateControl.setInterpolation(true);
       else rateControl.setInterpolation(false);
     }
   }

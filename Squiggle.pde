@@ -32,6 +32,8 @@ PImage logo;
 Capture cam;
 Font Baskerville64, Baskerville24, Baskerville22, Baskerville16;
 Radial[] radials;
+ArrayList<Radial> trackRadials = new ArrayList<Radial>();
+Track track1;
 
 int windowWidth, windowHeight;
 int maxRadialRadius = 60;
@@ -55,6 +57,9 @@ void setup() {
   //Load in logo png from data folder  
   logo = loadImage("Squiggle_Logo.png");
   
+  G4P.messagesEnabled(false);   // don't allow messages
+  G4P.setGlobalColorScheme(9);  // Custom scheme
+  G4P.setCtrlMode(GControlMode.CORNER);  //Set dimensioning to x1, y1, w, h
   setIntroGUIValues();
   introGUI();
 }

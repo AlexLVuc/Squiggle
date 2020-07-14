@@ -1,4 +1,4 @@
-
+ //<>//
 public void mainWindowMouse(PApplet app, GWinData data, MouseEvent event) {
   mainWinData mainData = (mainWinData)data;
 
@@ -6,7 +6,14 @@ public void mainWindowMouse(PApplet app, GWinData data, MouseEvent event) {
   if (event.getAction() == MouseEvent.RELEASE) {
     for (int i = 0; i < radials.length; i++) {
       radials[i].releaseHandleEvent();
-    } //<>//
+    }
+    try {
+      for (int i = track1.trackRadials.size() - 1; i >= 0; i--) {
+        track1.trackRadials.get(i).releaseHandleEvent();
+      }
+    } 
+    catch (Exception e) {
+    }
   }
 }
 
@@ -40,7 +47,11 @@ public void handleWebcamToggle4(GButton button, GEvent event) {
 } 
 
 public void handlePlay(GButton button, GEvent event) {
-  println("button1 - GButton >> GEvent." + event + " @ " + millis());
+  if (event == GEvent.CLICKED) {
+    track1.bPlaying = true;
+    track1.startOfPlay = millis();
+    println("playing");
+  }
 }
 
 public void handleRecord(GButton button, GEvent event) { 
@@ -54,22 +65,29 @@ public void handleOpen(GButton button, GEvent event) {
 public void handleRadialAreaSlider(GCustomSlider slider, GEvent event) { 
   float scalar = ((mainWinData)mainWindow.data).lastRadialPosX - (windowWidth - radialAreaBorder - maxRadialRadius);
   for (int i = 0; i < radials.length; i++) {
-    radials[i].posX = (maxRadialRadius * ((2 * i) + 1)) + (radialSpacing * i) + radialAreaBorder - (int(slider.getValueF() * scalar));
+    radials[i].curPosX = (maxRadialRadius * ((2 * i) + 1)) + (radialSpacing * i) + radialAreaBorder - (int(slider.getValueF() * scalar));
   }
 } 
 
 public void handleBPMTextField(GTextField field, GEvent event) {
   if (event == GEvent.LOST_FOCUS) {
     int bpm = field.getValueI();
-    
+
     // if the value input is not valid, set to 120
     if (bpm == -1) {
       field.setText("120");
     } else {
       ((mainWinData)mainWindow.data).BPM = bpm;
-      
+
       for (int i = 0; i < radials.length; i++) {
         radials[i].updateRadialBPM(bpm);
+      }
+      try {
+        for (int i = track1.trackRadials.size() - 1; i >= 0; i--) {
+          track1.trackRadials.get(i).updateRadialBPM(bpm);
+        }
+      } 
+      catch (Exception e) {
       }
     }
     field.setLocalColorScheme(9);

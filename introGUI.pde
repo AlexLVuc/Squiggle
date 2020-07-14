@@ -21,10 +21,6 @@ public void introGUI() {
   Baskerville22 = getFont("fonts/BASKVILL.TTF", Font.PLAIN, 22);
   Baskerville16 = getFont("fonts/BASKVILL.TTF", Font.PLAIN, 16);
 
-  G4P.setCtrlMode(GControlMode.CORNER);  //Set dimensioning to x1, y1, w, h
-  //G4P.messagesEnabled(false);   // disable messages on all G4P windows
-  G4P.setGlobalColorScheme(9);  // Custom scheme
-
   //Setup for the intro window
   introWindow = GWindow.getWindow(this, "Intro Screen", ((width - windowWidth) / 2), 0, windowWidth, windowHeight, JAVA2D); //((height - windowHeight) / 2)
   introWindow.setActionOnClose(G4P.CLOSE_WINDOW);
