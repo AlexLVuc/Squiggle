@@ -8,11 +8,13 @@ class Track {
 
   PApplet app;
   ArrayList<Radial> trackRadials;  // list of radials in a track
-  int posX, posY, w, h, trackLength, numOfTimeStamps;
-  boolean bPlaying;
+  int posX, posY, w, h, trackLengthB, BPM, trackSpacing;
+  float trackLengthMS;
+
   int startOfPlay = 0;
   float trackPos = 0;
-  float[] timeStamps;
+  boolean bPlaying = false;
+  int[] timeStampXValues;
 
 
   /* Contructor for a Track object
@@ -22,28 +24,26 @@ class Track {
    * @param y:     y position of top left of track
    * @param w_:    width of track
    * @param h_:    height of track
+   * @param bpm:   BPM of the track
    */
-  Track(PApplet app_, int x, int y, int w_, int h_) {
+  Track(PApplet app_, int x, int y, int w_, int h_, int bpm) {
     app = app_;
     posX = x;
     posY = y;
     w = w_;
     h = h_;
+    BPM = bpm;
 
     trackRadials = new ArrayList<Radial>();
-    trackLength = 10 * 1000; // 10 seconds default, represented in ms
-    numOfTimeStamps = 5;
-    bPlaying = false;
-    
-    timeStamps = new float[numOfTimeStamps];
-    float temp = trackLength / (numOfTimeStamps + 1);
-    for (int i = 0; i < numOfTimeStamps; i++) {
-      timeStamps[i] = temp * (i + 1);
+    trackLengthB = 120; // number of beats the track length is
+    trackLengthMS = (trackLengthB * (1000 / (BPM / 60)));
+    trackSpacing = 12;
+
+    timeStampXValues = new int[trackLengthB];
+    for (int i = 0; i < trackLengthB; i++) {
+      timeStampXValues[i] = posX + (trackSpacing * (i + 1));
     }
-
-    
   }
-
 
   /* method for adding a Radial to a track
    *
@@ -67,7 +67,7 @@ class Track {
   void update() {
     if (bPlaying) {
       // check if end of track has been reached
-      if ((millis() - startOfPlay) >= trackLength) {
+      if ((millis() - startOfPlay) >= trackLengthMS) {
         bPlaying = false;
         println("stopped playing");
       } else {
@@ -90,7 +90,7 @@ class Track {
     app.stroke(1);
     app.noFill();
     app.rect(posX, posY, w, h);
-    
+
     drawTrackTimeStamps();
 
     try {
@@ -107,26 +107,36 @@ class Track {
       drawTrackPosition();
     }
   }
-  
+
+  // method for drawing time stamps for the track
   void drawTrackTimeStamps() {
-    float spacing = w / (numOfTimeStamps + 1);
-    for (int i = 0; i < timeStamps.length; i++) {
-      float tempX = (posX + (spacing * (i + 1)));
-      app.textSize(10);
-      app.textAlign(CENTER);
-      app.fill(0);
-      app.text(nf(timeStamps[i] / 1000, 0, 1) + "s", tempX, posY + h + 13);
-      
-      app.strokeWeight(2);
-      app.stroke(200);
-      app.line(tempX, posY, tempX, posY + h);
+    for (int i = 0; i <= trackLengthB; i++) {
+      if (timeStampXValues[i] > windowWidth) {
+        break;
+      }
+      if (timeStampXValues[i] > posX) {
+        if ((i + 1) % 4 == 0) {
+          app.textSize(10);
+          app.textAlign(CENTER);
+          app.fill(0);
+          app.text((i + 1), timeStampXValues[i], posY + h + 13);
+
+          app.stroke(50);
+        } else {
+          app.stroke(200);
+        }
+        app.strokeWeight(2);
+        app.line(timeStampXValues[i], posY, timeStampXValues[i], posY + h);
+      }
     }
-    
   }
-  
+
   // method for drawing the position within a track 
   void drawTrackPosition() {
-    trackPos = map(millis() - startOfPlay, 0, trackLength, posX, posX + w);
+    trackPos = map(millis() - startOfPlay, 0, trackLengthMS, posX, posX + trackLengthMS);
+    if (trackPos >= trackWindowX + (trackWindowW / 2)) {
+      
+    }
     app.stroke(0, 200, 0);
     app.strokeWeight(1);
     app.line(trackPos, posY, trackPos, posY + h);

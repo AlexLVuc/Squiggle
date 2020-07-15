@@ -4,7 +4,7 @@
 GWindow mainWindow;
 GButton webcamToggle1, webcamToggle2, webcamToggle3, webcamToggle4; 
 GButton playButton, recordButton, openButton; 
-GCustomSlider radialAreaSlider; 
+GCustomSlider radialAreaSlider, trackSlider; 
 GTextField bpmField;
 
 int radialSpacing, radialAreaBorder;
@@ -40,11 +40,14 @@ public void mainGUI() {
   ((mainWinData)mainWindow.data).bGUILoaded = false;
   ((mainWinData)mainWindow.data).bCameraOn = true;
   ((mainWinData)mainWindow.data).bRadialsLoaded = false;
-  ((mainWinData)mainWindow.data).BPM = 60;
+  ((mainWinData)mainWindow.data).BPM = 120;
 
   makeRadialArray(mainWindow, findSoundFilesInDirectory(sketchPath() + "/data"));
   ((mainWinData)mainWindow.data).bRadialsLoaded = true;
   ((mainWinData)mainWindow.data).lastRadialPosX = radials[radials.length - 1].curPosX;
+  
+  track1 = new Track(mainWindow, trackWindowX, trackWindowY, trackWindowW, trackWindowH, ((mainWinData)mainWindow.data).BPM);
+  ((mainWinData)mainWindow.data).lastTrackPosX = track1.timeStampXValues[track1.timeStampXValues.length - 1];
 
   // Button declarations and handlers
   webcamToggle1 = new GButton(mainWindow, 45, 270, 80, 30, "Toggle Webcam");
@@ -76,6 +79,12 @@ public void mainGUI() {
   radialAreaSlider.setNumberFormat(G4P.DECIMAL, 2);
   radialAreaSlider.setShowDecor(false, false, false, false); //show: opaque, ticks, value, limits
   radialAreaSlider.addEventHandler(this, "handleRadialAreaSlider");
+  
+  trackSlider = new GCustomSlider(mainWindow, (trackWindowX + (trackWindowW / 2) - (400 / 2)), (trackWindowY + trackWindowH + 10), 400, 40, null);
+  trackSlider.setLimits(0.0f, 0.0f, 1.0f);
+  trackSlider.setNumberFormat(G4P.DECIMAL, 2);
+  trackSlider.setShowDecor(false, false, false, false); //show: opaque, ticks, value, limits
+  trackSlider.addEventHandler(this, "handleTrackSlider");
 
   // Text field declarations and handlers
   bpmField = new GTextField(mainWindow, windowWidth - 150, 750, 100, 36);
@@ -91,8 +100,7 @@ public void mainGUI() {
   squiggle.setFont(Baskerville64);
   squiggle.setText("SQUIGGLE.io");
   squiggle.setVisible(true); 
-  
-  track1 = new Track(mainWindow, trackWindowX, trackWindowY, trackWindowW, trackWindowH);
+
   ((mainWinData)mainWindow.data).bGUILoaded = true;
   printRadialsData();
 }

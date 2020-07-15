@@ -76,7 +76,7 @@ class Radial {
       }
 
       if (BPM != 0) {
-        curRC = (60f / BPM);
+        curRC = (120f / BPM);
         rateControl.value.setLastValue(curRC);
         if (curRC < 1)  rateControl.setInterpolation(true); 
         else            rateControl.setInterpolation(false);

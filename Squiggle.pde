@@ -78,6 +78,6 @@ class introWinData extends GWinData {
 
 class mainWinData extends GWinData {
   boolean bGUILoaded, bCameraOn, bRadialsLoaded;
-  int lastRadialPosX, BPM;
+  int lastRadialPosX, BPM, lastTrackPosX;
   String username;
 }

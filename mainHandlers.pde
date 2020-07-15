@@ -69,6 +69,13 @@ public void handleRadialAreaSlider(GCustomSlider slider, GEvent event) {
   }
 } 
 
+public void handleTrackSlider(GCustomSlider slider, GEvent event) {
+  float scalar = ((mainWinData)mainWindow.data).lastTrackPosX - ((trackWindowX + trackWindowW) - maxRadialRadius);
+  for (int i = 0; i < track1.timeStampXValues.length; i++) {
+    track1.timeStampXValues[i] = (track1.posX + (track1.trackSpacing * (i + 1))) - (int(slider.getValueF() * scalar));
+  }
+}
+
 public void handleBPMTextField(GTextField field, GEvent event) {
   if (event == GEvent.LOST_FOCUS) {
     int bpm = field.getValueI();
