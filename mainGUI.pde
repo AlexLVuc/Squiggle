@@ -89,7 +89,7 @@ public void mainGUI() {
   // Text field declarations and handlers
   bpmField = new GTextField(mainWindow, windowWidth - 150, 750, 100, 36);
   bpmField.addEventHandler(this, "handleBPMTextField");
-  bpmField.setNumeric(1, 500, -1);
+  bpmField.setNumeric(1, 250, -1);
   bpmField.tag = "bpm";
   bpmField.setFont(Baskerville24);
   bpmField.setText(str(((mainWinData)mainWindow.data).BPM));
@@ -149,7 +149,7 @@ void mainHeaderGUI(PApplet app, GWinData data) {
   app.background(#E8F4F8);
   //load logo
   app.image(logo, 31, 26, 100, 100);
-  // decided to display frame rate, just for shits
+  // decided to display frame rate
   app.fill(0);
   app.textSize(12);
   app.textAlign(RIGHT, TOP);

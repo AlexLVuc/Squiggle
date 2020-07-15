@@ -125,7 +125,7 @@ void introHeaderGUI(PApplet app, GWinData data) {
   app.stroke(#69D2E7);
   app.line((windowWidth / 2) - (introLineLength / 2), 286, (windowWidth / 2) + (introLineLength / 2), 286);
 
-  // decided to display frame rate, just for shits
+  // decided to display frame rate
   app.fill(0);
   app.textSize(12);
   app.textAlign(RIGHT, TOP);
