@@ -54,7 +54,7 @@ void setup() {
   windowHeight = height - int(height * 0.025f);
 
   //Load in logo png from data folder  
-  logo = loadImage("Squiggle_Logo.png");
+  logo = loadImage("data/Squiggle_Logo.png");
   
   G4P.messagesEnabled(false);   // don't allow messages
   G4P.setGlobalColorScheme(9);  // Custom scheme
@@ -69,7 +69,7 @@ void draw() {
 
 
 class introWinData extends GWinData {
-  boolean bJoin, bCreate, bTour;
+  boolean bGUILoaded, bJoin, bCreate, bTour;
   int butWidth;
   String sessionPassword;
   String username;

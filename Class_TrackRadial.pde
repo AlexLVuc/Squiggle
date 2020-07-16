@@ -272,11 +272,16 @@ class TrackRadial {
   // event method for handling if the handle is pressed
   void pressHandleEvent() {
     if (bOverHandle && app.mousePressed || bActiveHandle) {
-      bPressHandle = true;
-      bActiveHandle = true;
-      if (!bFirstTimeValue) {   
-        lastHandlePressTime = millis();
-        bFirstTimeValue = true;
+      if (app.mouseButton == LEFT) {
+        bPressHandle = true;
+        bActiveHandle = true;
+        if (!bFirstTimeValue) {   
+          lastHandlePressTime = millis();
+          bFirstTimeValue = true;
+        }
+      }
+      else if (app.mouseButton == RIGHT) {
+        track1.removeTrackRadial(this);
       }
     } else {
       bPressHandle = false;

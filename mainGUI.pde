@@ -3,9 +3,10 @@
 // All GWindow element declarations for main window
 GWindow mainWindow;
 GButton webcamToggle1, webcamToggle2, webcamToggle3, webcamToggle4; 
-GButton playButton, recordButton, openButton; 
+GButton playButton, recordButton, saveRecordingButton; 
 GCustomSlider radialAreaSlider, trackSlider; 
 GTextField bpmField;
+GDropList folderSelectList;
 
 int radialSpacing, radialAreaBorder;
 int trackWindowX, trackWindowY, trackWindowW, trackWindowH;
@@ -28,12 +29,16 @@ public void mainGUI() {
 
   //Load in a sound files wihin a given folder
   radialsMinim = new Minim(mainWindow);
+  mainMinim = new Minim(mainWindow);
 
   // get a stereo line-in: sample buffer length of 2048
   // default sample rate is 44100, default bit depth is 16
-  audioIn = radialsMinim.getLineIn(Minim.STEREO, 2048);
+  audioIn = mainMinim.getLineIn(Minim.STEREO, 2048);
   // get an output we can playback the recording on
-  audioOut = radialsMinim.getLineOut(Minim.STEREO);  
+  audioOut = radialsMinim.getLineOut(Minim.STEREO);
+  
+  // make temp recording file for when recording occurs
+  makeTempRecordingFile();
 
   // set main window data
   ((mainWinData)mainWindow.data).username = ((introWinData)introWindow.data).username;
@@ -42,10 +47,12 @@ public void mainGUI() {
   ((mainWinData)mainWindow.data).bRadialsLoaded = false;
   ((mainWinData)mainWindow.data).BPM = 120;
 
+  // make Radial array from the default folder
   makeRadialArray(mainWindow, findSoundFilesInDirectory(sketchPath() + "/data"));
   ((mainWinData)mainWindow.data).bRadialsLoaded = true;
   ((mainWinData)mainWindow.data).lastRadialPosX = radials[radials.length - 1].curPosX;
   
+  // make a track
   track1 = new Track(mainWindow, trackWindowX, trackWindowY, trackWindowW, trackWindowH, ((mainWinData)mainWindow.data).BPM);
   ((mainWinData)mainWindow.data).lastTrackPosX = track1.timeStampXValues[track1.timeStampXValues.length - 1];
 
@@ -63,15 +70,15 @@ public void mainGUI() {
   webcamToggle4.addEventHandler(this, "handleWebcamToggle4");
   webcamToggle4.setFont(Baskerville16);
 
-  playButton = new GButton(mainWindow, 861, 55, 100, 42, "PLAY");
+  playButton = new GButton(mainWindow, windowWidth - 510, 55, 120, 42, "PLAY");
   playButton.addEventHandler(this, "handlePlay");
   playButton.setFont(Baskerville16);
-  recordButton = new GButton(mainWindow, 1016, 55, 100, 42, "RECORD");
+  recordButton = new GButton(mainWindow, windowWidth - 340, 55, 120, 42, "RECORD");
   recordButton.addEventHandler(this, "handleRecord");
   recordButton.setFont(Baskerville16);
-  openButton = new GButton(mainWindow, 1172, 55, 100, 42, "OPEN FILE");
-  openButton.addEventHandler(this, "handleOpen");
-  openButton.setFont(Baskerville16);
+  saveRecordingButton = new GButton(mainWindow, windowWidth - 170, 55, 120, 42, "SAVE RECORDING");
+  saveRecordingButton.addEventHandler(this, "handleBtnSaveRecording");
+  saveRecordingButton.setFont(Baskerville16);
 
   // Slider declarations and handlers
   radialAreaSlider = new GCustomSlider(mainWindow, centerGControlX(mainWindow, 220), (mainWindow.height - 50), 220, 40, null);
@@ -79,7 +86,6 @@ public void mainGUI() {
   radialAreaSlider.setNumberFormat(G4P.DECIMAL, 2);
   radialAreaSlider.setShowDecor(false, false, false, false); //show: opaque, ticks, value, limits
   radialAreaSlider.addEventHandler(this, "handleRadialAreaSlider");
-  
   trackSlider = new GCustomSlider(mainWindow, (trackWindowX + (trackWindowW / 2) - (400 / 2)), (trackWindowY + trackWindowH + 10), 400, 40, null);
   trackSlider.setLimits(0.0f, 0.0f, 1.0f);
   trackSlider.setNumberFormat(G4P.DECIMAL, 2);
@@ -93,6 +99,10 @@ public void mainGUI() {
   bpmField.tag = "bpm";
   bpmField.setFont(Baskerville24);
   bpmField.setText(str(((mainWinData)mainWindow.data).BPM));
+  
+  folderSelectList = new GDropList(mainWindow, 20, windowHeight - 300, 100, 60);
+  initializeFolderSelectValues(sketchPath() + "/data/sounds/", 0);
+  folderSelectList.setLocalColorScheme(1);
 
   // reused label from intro window resized and moved
   squiggle = new GLabel(mainWindow, 138, 32, 414, 88);
@@ -102,6 +112,7 @@ public void mainGUI() {
   squiggle.setVisible(true); 
 
   ((mainWinData)mainWindow.data).bGUILoaded = true;
+  
   //printRadialsData();
 }
 
@@ -132,8 +143,19 @@ public void mainWindowDraw(PApplet app, GWinData data) {
         radials[i].display(180, NO_COLOR);
       }
       track1.update();
-      track1.display(180, NO_COLOR); //<>// //<>//
+      track1.display(180, NO_COLOR);  //<>//
     }
+    
+    if (recorder.isRecording()) {
+      app.fill(255, 0, 0);
+      app.noStroke();
+      app.circle(windowWidth - 200, (55 + (42 / 2)), 20);
+    } else if (recorded) {
+      if (recording.length() == recording.position()) {
+        recordButton.setText("PLAY RECORDING");
+      }
+    }
+    
   } else {
     mainLoadingGUI(app, data);
   }

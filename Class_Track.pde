@@ -55,6 +55,15 @@ class Track {
     trackRadials.add(newTrackRadial);
   }
 
+  /* method for removing a Radial from a track
+   *
+   * @param r:  TrackRadial to be removed
+   */
+  void removeTrackRadial(TrackRadial r) {
+    r.sound.close();
+    trackRadials.remove(r);
+  }
+
   /* method for finding closest beat based on x position of TrackRadial
    *
    * @param x:  x position of TrackRadial
@@ -157,7 +166,7 @@ class Track {
       }
     } 
     catch (Exception e) {
-      println("Exception: " + e);
+      println("Exception: " + e + " when trying to display track radials");
     }
 
     if (bPlaying) {
@@ -168,7 +177,8 @@ class Track {
   // method for drawing time stamps for the track
   void drawTrackTimeStamps() {
     for (int i = 0; i < trackLengthB; i++) {
-      if (timeStampXValues[i] > windowWidth) {
+      // break if the lines are out of the track area to the right
+      if (timeStampXValues[i] > posX + w) {
         break;
       }
       // check if beat line is within the track area
@@ -192,13 +202,19 @@ class Track {
 
   // method for drawing the position within a track
   void drawTrackPosition() {
-    int trackBeatPos = round((millis() - startOfPlay) / (trackLengthMS / trackLengthB)) - 1;
-    trackPos = timeStampXValues[trackBeatPos];
+    int trackBeatPos = round((millis() - startOfPlay) / (trackLengthMS / trackLengthB));
+    
+    try {
+      trackPos = timeStampXValues[trackBeatPos];
+    } 
+    catch (Exception e) {
+      println("Exception: " + e + " when drawing track position");
+    }
     
     // check if track positon line is past the halfway of the window width
-    if (trackPos > trackWindowX + (trackWindowW / 2)) {
+    if (trackPos > posX + (w / 2)) {
       // find the amount needed to place the current value exactly at halfway the window width
-      float scalar = timeStampXValues[trackBeatPos] - (trackWindowX + (trackWindowW / 2));
+      float scalar = timeStampXValues[trackBeatPos] - (posX + (w / 2));
       for (int i = 0; i < track1.timeStampXValues.length; i++) {
         timeStampXValues[i] -= scalar;
       }
@@ -206,7 +222,7 @@ class Track {
     }
 
     // check if track position is located within track area
-    if (trackPos >= trackWindowX && trackPos <= (trackWindowX + trackWindowX)) {
+    if (trackPos >= posX && trackPos <= (posX + w)) {
       app.stroke(0, 200, 0);
       app.strokeWeight(2);
       app.line(trackPos, posY, trackPos, posY + h);

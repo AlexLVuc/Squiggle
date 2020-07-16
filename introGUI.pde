@@ -3,15 +3,15 @@
  * Creator: Michael Jamieson
  * Date: July 4, 2020
  */
- 
+
 // All GWindow element declarations for intro window
 GWindow introWindow;
 GButton joinSession, createSession, takeATour, clipboard, play, back;
 GTextField roomCodeField, nameField;
 GLabel squiggle, roomCodeLabel, nameLabel;
 
-int introButLargeW, introButLargeH, introButSmallW, introButSmallH, introFieldW, introFieldH,
-    introLineLength;
+int introButLargeW, introButLargeH, introButSmallW, introButSmallH, introFieldW, introFieldH, 
+  introLineLength;
 
 //This method initializes all elements of the intro screen
 public void introGUI() {
@@ -29,6 +29,7 @@ public void introGUI() {
   introWindow.addMouseHandler(this, "introWindowMouse");
   introWindow.addKeyHandler(this, "introWindowKey");
   introWindow.addData(new introWinData());
+  ((introWinData)introWindow.data).bGUILoaded = false;
   ((introWinData)introWindow.data).bJoin = false;
   ((introWinData)introWindow.data).bCreate = false;
   ((introWinData)introWindow.data).bTour = false;
@@ -84,6 +85,8 @@ public void introGUI() {
   nameLabel.setFont(Baskerville22);
   nameLabel.setText("Name");
   nameLabel.setVisible(false);  
+
+  ((introWinData)introWindow.data).bGUILoaded = true;
 }
 
 /* default method for drawing to G4P intro window
@@ -93,18 +96,18 @@ public void introGUI() {
  */
 public void introWindowDraw(PApplet app, GWinData data) {
   introWinData introData = (introWinData)data;
-  introHeaderGUI(app, data); 
+  
+  if (introData.bGUILoaded) {
+    introHeaderGUI(app, data); 
 
-  if (introData.bJoin) {
-    introJoinSessionGUI(app, data);
-  } 
-  else if (introData.bCreate) {
-    introCreateSessionGUI(app, data);
-  } 
-  else if (introData.bTour) {
-  } 
-  else {
-    introMainGUI(app, data);
+    if (introData.bJoin) {
+      introJoinSessionGUI(app, data);
+    } else if (introData.bCreate) {
+      introCreateSessionGUI(app, data);
+    } else if (introData.bTour) {
+    } else {
+      introMainGUI(app, data);
+    }
   }
 }
 

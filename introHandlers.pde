@@ -5,7 +5,7 @@
  */
 
 public void introWindowMouse(PApplet app, GWinData data, MouseEvent event) {
-  introWinData introData = (introWinData)data;
+  //introWinData introData = (introWinData)data;
 }
 
 public void introWindowKey(PApplet app, GWinData data, KeyEvent event) {
@@ -20,13 +20,13 @@ public void introWindowKey(PApplet app, GWinData data, KeyEvent event) {
 
 public void handleRoomCodeTextField(GTextField field, GEvent event) { 
  if (event == GEvent.GETS_FOCUS) {
-   roomCodeField.setLocalColor(2, #000050);
+   field.setLocalColor(2, #000050);
  }
 }
 
 public void handleNameTextField(GTextField field, GEvent event) { 
  if (event == GEvent.GETS_FOCUS) {
-   nameField.setLocalColor(2, #000050);
+   field.setLocalColor(2, #000050);
  }
 }
 

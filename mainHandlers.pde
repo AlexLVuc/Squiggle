@@ -13,6 +13,7 @@ public void mainWindowMouse(PApplet app, GWinData data, MouseEvent event) {
       }
     } 
     catch (Exception e) {
+      println("Exception: " + e + " when tring to release track radial handles");
     }
   }
 }
@@ -53,7 +54,9 @@ public void handlePlay(GButton button, GEvent event) {
       track1.bPlaying = true;
       track1.startOfPlay = millis();
       button.setText("PAUSE");
+      // set slider to the beginning
       trackSlider.setValue(0.0f);
+      setTrackTimeStampValues();
       println("playing");
     }
     // if the track is currently playing, pause all the sounds
@@ -70,11 +73,38 @@ public void handlePlay(GButton button, GEvent event) {
 }
 
 public void handleRecord(GButton button, GEvent event) { 
-  println("recordButton - GButton >> GEvent." + event + " @ " + millis());
+  if (event == GEvent.CLICKED) {
+    // check if a recording has been made
+    if (!recorded) {
+      // check if the recording is currently active
+      if (recorder.isRecording() ) {
+        recorder.endRecord();
+        recorded = true;
+        recorder.save();
+        recording = mainMinim.loadFile(tempRecordingFilePath + activeRecordingFileName);
+        button.setText("PLAY RECORDING");
+      } else {
+        recorder.beginRecord();
+        button.setText("RECORDING");
+      }
+    } else {
+      if (!recording.isPlaying()) {
+        recording.play(0);
+        button.setText("PAUSE RECORDING");
+      } else {
+        recording.pause();
+        button.setText("PLAY RECORDING");
+      } 
+    }
+  }
 } 
 
-public void handleOpen(GButton button, GEvent event) { 
-  println("openButton - GButton >> GEvent." + event + " @ " + millis());
+public void handleBtnSaveRecording(GButton button, GEvent event) { 
+  if (event == GEvent.CLICKED) {
+    if (recorded) {
+      saveGUI();
+    }
+  }
 } 
 
 public void handleRadialAreaSlider(GCustomSlider slider, GEvent event) { 
@@ -85,10 +115,7 @@ public void handleRadialAreaSlider(GCustomSlider slider, GEvent event) {
 } 
 
 public void handleTrackSlider(GCustomSlider slider, GEvent event) {
-  float scalar = ((mainWinData)mainWindow.data).lastTrackPosX - ((trackWindowX + trackWindowW) - track1.trackSpacing);
-  for (int i = 0; i < track1.timeStampXValues.length; i++) {
-    track1.timeStampXValues[i] = (track1.posX + (track1.trackSpacing * (i + 1))) - (int(slider.getValueF() * scalar));
-  }
+  setTrackTimeStampValues();
 }
 
 public void handleBPMTextField(GTextField field, GEvent event) {
@@ -110,8 +137,17 @@ public void handleBPMTextField(GTextField field, GEvent event) {
         }
       } 
       catch (Exception e) {
+        println("Exception: " + e + " when trying to update track radial tick rates");
       }
     }
     field.setLocalColorScheme(9);
+  }
+}
+
+// method for setting the time stamp x values of a track based on the trackSlider position
+void setTrackTimeStampValues() {
+  float scalar = ((mainWinData)mainWindow.data).lastTrackPosX - ((trackWindowX + trackWindowW) - track1.trackSpacing);
+  for (int i = 0; i < track1.timeStampXValues.length; i++) {
+    track1.timeStampXValues[i] = (track1.posX + (track1.trackSpacing * (i + 1))) - (int(trackSlider.getValueF() * scalar));
   }
 }
