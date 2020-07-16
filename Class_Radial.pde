@@ -492,7 +492,7 @@ class Radial {
         // check if the Radial has been released in the track window
         if (track1.overTrack(curPosX, curPosY)) {
           println("new Radial being added: " + fileName);
-          track1.addRadial(this);
+          track1.addTrackRadial(this);
         }
         curPosX = orgPosX;
         curPosY = orgPosY;
@@ -533,7 +533,7 @@ class Radial {
     sound.pause();
   }
 
-  void updateRadialBPM(int bpm) {
+  void updateRadialTickRate(int bpm) {
     if (BPM != 0) {
       curRC = (float(bpm) / BPM);
       rateControl.value.setLastValue(curRC);

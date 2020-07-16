@@ -32,7 +32,6 @@ PImage logo;
 Capture cam;
 Font Baskerville64, Baskerville24, Baskerville22, Baskerville16;
 Radial[] radials;
-ArrayList<Radial> trackRadials = new ArrayList<Radial>();
 Track track1;
 
 int windowWidth, windowHeight;

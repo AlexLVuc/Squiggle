@@ -48,9 +48,24 @@ public void handleWebcamToggle4(GButton button, GEvent event) {
 
 public void handlePlay(GButton button, GEvent event) {
   if (event == GEvent.CLICKED) {
-    track1.bPlaying = true;
-    track1.startOfPlay = millis();
-    println("playing");
+    // if the track isnt playing, play it
+    if (!track1.bPlaying) {
+      track1.bPlaying = true;
+      track1.startOfPlay = millis();
+      button.setText("PAUSE");
+      trackSlider.setValue(0.0f);
+      println("playing");
+    }
+    // if the track is currently playing, pause all the sounds
+    else if (track1.bPlaying) {
+      track1.bPlaying = false;
+      for (int i = track1.trackRadials.size() - 1; i >= 0; i--) {
+        if (track1.trackRadials.get(i).sound.isPlaying()) {
+          track1.trackRadials.get(i).pause();
+        }
+      }
+      button.setText("PLAY");
+    }
   }
 }
 
@@ -65,12 +80,12 @@ public void handleOpen(GButton button, GEvent event) {
 public void handleRadialAreaSlider(GCustomSlider slider, GEvent event) { 
   float scalar = ((mainWinData)mainWindow.data).lastRadialPosX - (windowWidth - radialAreaBorder - maxRadialRadius);
   for (int i = 0; i < radials.length; i++) {
-    radials[i].curPosX = (maxRadialRadius * ((2 * i) + 1)) + (radialSpacing * i) + radialAreaBorder - (int(slider.getValueF() * scalar));
+    radials[i].orgPosX = radials[i].curPosX = (maxRadialRadius * ((2 * i) + 1)) + (radialSpacing * i) + radialAreaBorder - (int(slider.getValueF() * scalar));
   }
 } 
 
 public void handleTrackSlider(GCustomSlider slider, GEvent event) {
-  float scalar = ((mainWinData)mainWindow.data).lastTrackPosX - ((trackWindowX + trackWindowW) - maxRadialRadius);
+  float scalar = ((mainWinData)mainWindow.data).lastTrackPosX - ((trackWindowX + trackWindowW) - track1.trackSpacing);
   for (int i = 0; i < track1.timeStampXValues.length; i++) {
     track1.timeStampXValues[i] = (track1.posX + (track1.trackSpacing * (i + 1))) - (int(slider.getValueF() * scalar));
   }
@@ -87,11 +102,11 @@ public void handleBPMTextField(GTextField field, GEvent event) {
       ((mainWinData)mainWindow.data).BPM = bpm;
 
       for (int i = 0; i < radials.length; i++) {
-        radials[i].updateRadialBPM(bpm);
+        radials[i].updateRadialTickRate(bpm);
       }
       try {
         for (int i = track1.trackRadials.size() - 1; i >= 0; i--) {
-          track1.trackRadials.get(i).updateRadialBPM(bpm);
+          track1.trackRadials.get(i).updateRadialTickRate(bpm);
         }
       } 
       catch (Exception e) {

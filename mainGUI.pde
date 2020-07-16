@@ -102,7 +102,7 @@ public void mainGUI() {
   squiggle.setVisible(true); 
 
   ((mainWinData)mainWindow.data).bGUILoaded = true;
-  printRadialsData();
+  //printRadialsData();
 }
 
 
