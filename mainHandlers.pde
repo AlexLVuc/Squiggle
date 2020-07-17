@@ -15,6 +15,7 @@ public void mainWindowMouse(PApplet app, GWinData data, MouseEvent event) {
     catch (Exception e) {
       println("Exception: " + e + " when tring to release track radial handles");
     }
+    mainData.bRadialHandleActive = false;
   }
 }
 
@@ -94,7 +95,7 @@ public void handleRecord(GButton button, GEvent event) {
       } else {
         recording.pause();
         button.setText("PLAY RECORDING");
-      } 
+      }
     }
   }
 } 
@@ -141,6 +142,16 @@ public void handleBPMTextField(GTextField field, GEvent event) {
       }
     }
     field.setLocalColorScheme(9);
+  }
+}
+
+
+public void handleFolderSelectList(GDropList droplist, GEvent event) {
+  if (event == GEvent.SELECTED) {
+    int temp = droplist.getSelectedText().lastIndexOf('>');
+    String folder = droplist.getSelectedText().substring(temp + 1);
+    String path = findSelectedFolder(((mainWinData)mainWindow.data).currentFolder, folder);
+    println(path);
   }
 }
 

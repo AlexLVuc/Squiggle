@@ -51,7 +51,7 @@ class Track {
    */
   void addTrackRadial(Radial r) {
     int beat = findClosestBeat(r.curPosX);
-    TrackRadial newTrackRadial = new TrackRadial(r.app, r.name, r.fileName, r.fileType, timeStampXValues[beat - 1], r.curPosY, trackRadials, r.sampleArray, r.frequencyArray, r.BPM, r.curRC, beat);
+    TrackRadial newTrackRadial = new TrackRadial(r.app, r.name, r.fileName, r.fileType, timeStampXValues[beat - 1], r.curPosY, r.sampleArray, r.frequencyArray, r.BPM, r.curRC, beat);
     trackRadials.add(newTrackRadial);
   }
 
@@ -125,7 +125,8 @@ class Track {
    * check for whether the track is playing
    * check if Radials within a track should be playing
    */
-  void update() {
+  boolean update(boolean otherActiveHandle) {
+    // check if track is playing
     if (bPlaying) {
       // check if end of track has been reached
       if ((millis() - startOfPlay) >= trackLengthMS) {
@@ -143,6 +144,25 @@ class Track {
         }
       }
     }
+    
+    // update all the Radials in the track
+    boolean temp = otherActiveHandle;
+    try {
+      for (int i = trackRadials.size() - 1; i >= 0; i--) {
+        // if it was found a handle was active, just update without checking the return 
+        if (temp) {
+          trackRadials.get(i).update(temp);
+        }
+        else if (trackRadials.get(i).update(temp)) {
+          temp = true;
+        }
+      }
+    } 
+    catch (Exception e) {
+      println("Exception: " + e + " when trying to display track radials");
+    }
+    
+    return temp;
   }
 
   /* method for displaying all Track info
@@ -161,7 +181,6 @@ class Track {
 
     try {
       for (int i = trackRadials.size() - 1; i >= 0; i--) {
-        trackRadials.get(i).update();
         trackRadials.get(i).display(displayPoints, colorScheme);
       }
     } 
@@ -203,14 +222,14 @@ class Track {
   // method for drawing the position within a track
   void drawTrackPosition() {
     int trackBeatPos = round((millis() - startOfPlay) / (trackLengthMS / trackLengthB));
-    
+
     try {
       trackPos = timeStampXValues[trackBeatPos];
     } 
     catch (Exception e) {
       println("Exception: " + e + " when drawing track position");
     }
-    
+
     // check if track positon line is past the halfway of the window width
     if (trackPos > posX + (w / 2)) {
       // find the amount needed to place the current value exactly at halfway the window width

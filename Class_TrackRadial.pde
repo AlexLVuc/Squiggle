@@ -17,12 +17,10 @@ class TrackRadial {
   float curRC;
   float[] sampleArray;
   int[] frequencyArray;
-  ArrayList<TrackRadial> others;
 
   boolean bOverHandle = false;
   boolean bPressHandle = false;
   boolean bActiveHandle = false;
-  boolean bOtherActiveHandle = false;
   boolean bFirstTimeValue = false;
   float lastHandlePressTime = 0;
   int handleRadius = maxRadialRadius;
@@ -37,7 +35,7 @@ class TrackRadial {
    * @param curPosY_:      y position of center of radial
    * @param others_:    array of other radials in a window to check from drag and drop activity
    */
-  TrackRadial(PApplet app_, String name_, String fileName_, int fileType_, int curPosX_, int curPosY_, ArrayList<TrackRadial> others_, float[] samples, int[] frequencies, int bpm, float curRC_, int beat) {
+  TrackRadial(PApplet app_, String name_, String fileName_, int fileType_, int curPosX_, int curPosY_, float[] samples, int[] frequencies, int bpm, float curRC_, int beat) {
     app = app_;
     name = name_;
     fileName = fileName_;
@@ -45,7 +43,6 @@ class TrackRadial {
     curPosX = orgPosX = curPosX_;
     curPosY = orgPosY = curPosY_;
     filePath = ""; //NEED TO CHANGE
-    others = others_;
     BPM = bpm;
     curRC = curRC_;
     beatPos = beat;
@@ -131,25 +128,15 @@ class TrackRadial {
    * check for whether the handle has been hovered or clicked
    * update the x and y of the Radial while the handle is pressed
    */
-  void update() {   
+  boolean update(boolean otherActiveHandle) {   
 
     // update x positon if track x positons have been changed
     if (track1.timeStampXValues[beatPos - 1] != curPosX) {
       curPosX = track1.timeStampXValues[beatPos - 1];
     }
 
-    // go through all other Radials in the array to see if any are active
-    for (int i = others.size() - 1; i >= 0; i--) {
-      if (others.get(i).bActiveHandle) {
-        bOtherActiveHandle = true;
-        break;
-      } else {
-        bOtherActiveHandle = false;
-      }
-    }
-
     // if there are no other active handles, run updates 
-    if (!bOtherActiveHandle) {
+    if (!otherActiveHandle) {
       overHandleEvent();
       pressHandleEvent();
     }
@@ -161,6 +148,13 @@ class TrackRadial {
         curPosX = keepOnScreen(app.mouseX, handleRadius, (windowWidth - handleRadius));
         curPosY = keepOnScreen(app.mouseY, handleRadius, (windowHeight - handleRadius));
       }
+    }
+
+    // return whether this Radial became active
+    if (bActiveHandle) {
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -279,8 +273,7 @@ class TrackRadial {
           lastHandlePressTime = millis();
           bFirstTimeValue = true;
         }
-      }
-      else if (app.mouseButton == RIGHT) {
+      } else if (app.mouseButton == RIGHT) {
         track1.removeTrackRadial(this);
       }
     } else {

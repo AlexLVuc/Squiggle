@@ -32,12 +32,10 @@ class Radial {
   float curRC;
   float[] sampleArray;
   int[] frequencyArray;
-  Radial[] others;
 
   boolean bOverHandle = false;
   boolean bPressHandle = false;
   boolean bActiveHandle = false;
-  boolean bOtherActiveHandle = false;
   boolean bFirstTimeValue = false;
   float lastHandlePressTime = 0;
   int handleRadius = maxRadialRadius;
@@ -50,9 +48,8 @@ class Radial {
    * @param fileType_:  file type of sound file
    * @param curPosX_:      x position of center of radial
    * @param curPosY_:      y position of center of radial
-   * @param others_:    array of other radials in a window to check from drag and drop activity
    */
-  Radial(PApplet app_, String name_, String fileName_, int fileType_, int curPosX_, int curPosY_, Radial[] others_, boolean copy) {
+  Radial(PApplet app_, String name_, String fileName_, int fileType_, int curPosX_, int curPosY_) {
     app = app_;
     name = name_;
     fileName = fileName_;
@@ -60,30 +57,26 @@ class Radial {
     curPosX = orgPosX = curPosX_;
     curPosY = orgPosY = curPosY_;
     filePath = ""; //NEED TO CHANGE
-    others = others_;
-    
+
     sampleArray = new float[maxArraySize];
     frequencyArray = new int[maxArraySize];
     rateControl = new TickRate(1f);
-    
-    // only load info from file if you're not copying it to a track
-    if (!copy) {
-      // check for data array files
-      if (!checkForDataFile()) {
-        createDataFile(createSampleArray(), createFrequencyArray());
-      } else {   
-        loadDataFromFile();
-      }
 
-      if (BPM != 0) {
-        curRC = (120f / BPM);
-        rateControl.value.setLastValue(curRC);
-        if (curRC < 1)  rateControl.setInterpolation(true); 
-        else            rateControl.setInterpolation(false);
-      } else {
-        curRC = 1f;
-        rateControl.value.setLastValue(1f);
-      }
+    // check for data array files
+    if (!checkForDataFile()) {
+      createDataFile(createSampleArray(), createFrequencyArray());
+    } else {   
+      loadDataFromFile();
+    }
+
+    if (BPM != 0) {
+      curRC = (120f / BPM);
+      rateControl.value.setLastValue(curRC);
+      if (curRC < 1)  rateControl.setInterpolation(true); 
+      else            rateControl.setInterpolation(false);
+    } else {
+      curRC = 1f;
+      rateControl.value.setLastValue(1f);
     }
 
     // load the correct file type into the player
@@ -175,7 +168,7 @@ class Radial {
       sampleArray[i] = row.getFloat("samples");
       frequencyArray[i] = row.getInt("frequencies");
       if (i == 0) BPM = row.getInt("BPM");
-    }    
+    }
   }
 
   // method for reducing the samples in an mp3 or wav file to 720 values
@@ -339,19 +332,9 @@ class Radial {
    * check for whether the handle has been hovered or clicked
    * update the x and y of the Radial while the handle is pressed
    */
-  void update() {   
-    // go through all other Radials in the array to see if any are active
-    for (int i = 0; i < others.length; i++) {
-      if (others[i].bActiveHandle) {
-        bOtherActiveHandle = true;
-        break;
-      } else {
-        bOtherActiveHandle = false;
-      }
-    }
-
+  boolean update(boolean otherActiveHandle) {  
     // if there are no other active handles, run updates 
-    if (!bOtherActiveHandle) {
+    if (!otherActiveHandle) {
       overHandleEvent();
       pressHandleEvent();
     }
@@ -363,6 +346,13 @@ class Radial {
         curPosX = keepOnScreen(app.mouseX, handleRadius, (windowWidth - handleRadius));
         curPosY = keepOnScreen(app.mouseY, handleRadius, (windowHeight - handleRadius));
       }
+    }
+
+    // if this handle became active, return true so other radials can be updated
+    if (bActiveHandle) {
+      return true;
+    } else {
+      return false;
     }
   }
 
@@ -515,7 +505,7 @@ class Radial {
   int keepOnScreen(int mousePos, int minPos, int maxPos) { 
     return  min(max(mousePos, minPos), maxPos);
   }
-  
+
 
   /* ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
    *

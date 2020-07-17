@@ -45,7 +45,9 @@ public void mainGUI() {
   ((mainWinData)mainWindow.data).bGUILoaded = false;
   ((mainWinData)mainWindow.data).bCameraOn = true;
   ((mainWinData)mainWindow.data).bRadialsLoaded = false;
+  ((mainWinData)mainWindow.data).bRadialHandleActive = false;
   ((mainWinData)mainWindow.data).BPM = 120;
+  ((mainWinData)mainWindow.data).currentFolder = sketchPath() + "/data/sounds/";
 
   // make Radial array from the default folder
   makeRadialArray(mainWindow, findSoundFilesInDirectory(sketchPath() + "/data"));
@@ -100,9 +102,11 @@ public void mainGUI() {
   bpmField.setFont(Baskerville24);
   bpmField.setText(str(((mainWinData)mainWindow.data).BPM));
   
-  folderSelectList = new GDropList(mainWindow, 20, windowHeight - 300, 100, 60);
-  initializeFolderSelectValues(sketchPath() + "/data/sounds/", 0);
-  folderSelectList.setLocalColorScheme(1);
+  folderSelectList = new GDropList(mainWindow, 20, windowHeight - 300, 200, 100);
+  folderSelectList.addEventHandler(this, "handleFolderSelectList");
+  folderSelectList.setFont(Baskerville22);
+  folderSelectList.setLocalColorScheme(10); // seperate color scheme for this
+  initializeFolderSelectValues(((mainWinData)mainWindow.data).currentFolder, 0);
 
   // reused label from intro window resized and moved
   squiggle = new GLabel(mainWindow, 138, 32, 414, 88);
@@ -139,10 +143,19 @@ public void mainWindowDraw(PApplet app, GWinData data) {
     // draw radials
     if (mainData.bRadialsLoaded) {
       for (int i = 0; i < radials.length; i++) {
-        radials[i].update();
+        // if it was found a handle was active, just update without checking the return 
+        if (mainData.bRadialHandleActive) {
+          radials[i].update(mainData.bRadialHandleActive);
+        }
+        else if (radials[i].update(mainData.bRadialHandleActive)) {
+          mainData.bRadialHandleActive = true;
+        }
         radials[i].display(180, NO_COLOR);
       }
-      track1.update();
+      // update track radials
+      if (track1.update(mainData.bRadialHandleActive)) {
+        mainData.bRadialHandleActive = true;
+      }
       track1.display(180, NO_COLOR);  //<>//
     }
     

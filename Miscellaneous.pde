@@ -100,7 +100,7 @@ void makeRadialArray(PApplet app, ArrayList<soundFile> arrayList) {
   radials = new Radial[arrayList.size()];
   for (int i = arrayList.size() - 1; i >= 0; i--) {
     soundFile file = arrayList.get(i);
-    radials[i] = new Radial(app, file.name, file.name, file.fileType, (maxRadialRadius * ((2 * i) + 1)) + (radialSpacing * i) + radialAreaBorder, 900, radials, false);
+    radials[i] = new Radial(app, file.name, file.name, file.fileType, (maxRadialRadius * ((2 * i) + 1)) + (radialSpacing * i) + radialAreaBorder, 900);
     arrayList.remove(i);
   }
 }
@@ -200,4 +200,27 @@ void initializeFolderSelectValues(String path, int recursion) {
       initializeFolderSelectValues(files[i].getPath(), recursion + 1);
     }
   }
+}
+
+String findSelectedFolder(String path, String folder) {
+  File defaultFolder = new File(path);
+  File[] files = defaultFolder.listFiles();  
+  
+  // check each file
+  for (int i = 0; i < files.length; i++) {
+    if (files[i].isDirectory()) {
+      // if the directory matches the name, return it
+      if (files[i].getName().equals(folder)) {
+        return files[i].getAbsolutePath();
+      } else {
+        // otherwise, check the folder recursively and see if the folder is in there
+        String temp = findSelectedFolder(files[i].getPath(), folder);
+        if (!temp.equals("")) {
+          return temp;
+        }
+      }
+    }
+  }
+  
+  return "";
 }
