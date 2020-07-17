@@ -140,6 +140,8 @@ public void handleBPMTextField(GTextField field, GEvent event) {
       catch (Exception e) {
         println("Exception: " + e + " when trying to update track radial tick rates");
       }
+      track1.updateBPM(bpm);
+      println(track1.trackLengthMS);
     }
     field.setLocalColorScheme(9);
   }
@@ -148,7 +150,7 @@ public void handleBPMTextField(GTextField field, GEvent event) {
 
 public void handleFolderSelectList(GDropList droplist, GEvent event) {
   if (event == GEvent.SELECTED) {
-    int temp = droplist.getSelectedText().lastIndexOf('>');
+    int temp = droplist.getSelectedText().lastIndexOf(" ");
     String folder = droplist.getSelectedText().substring(temp + 1);
     String path = findSelectedFolder(sketchPath() + "/data/sounds/", folder);
     makeRadialArray(mainWindow, findSoundFilesInDirectory(path), path);

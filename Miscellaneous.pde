@@ -195,7 +195,7 @@ void initializeFolderSelectValues(String path, int recursion) {
       String folderName = "";
       if (recursion != 0) {
         for (int j = 0; j < recursion; j++) {
-          folderName += ">";
+          folderName += "   ";
         }
         folderName += files[i].getPath().substring(pathLength + 1, tempLength);
       } else {

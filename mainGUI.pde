@@ -88,10 +88,10 @@ public void mainGUI() {
   radialAreaSlider.setShowDecor(false, false, false, false); //show: opaque, ticks, value, limits
   radialAreaSlider.addEventHandler(this, "handleRadialAreaSlider");
   trackSlider = new GCustomSlider(mainWindow, (trackWindowX + (trackWindowW / 2) - (400 / 2)), (trackWindowY + trackWindowH + 10), 400, 40, null);
+  trackSlider.addEventHandler(this, "handleTrackSlider");
   trackSlider.setLimits(0.0f, 0.0f, 1.0f);
   trackSlider.setNumberFormat(G4P.DECIMAL, 2);
   trackSlider.setShowDecor(false, false, false, false); //show: opaque, ticks, value, limits
-  trackSlider.addEventHandler(this, "handleTrackSlider");
 
   // Text field declarations and handlers
   bpmField = new GTextField(mainWindow, windowWidth - 150, 750, 100, 36);

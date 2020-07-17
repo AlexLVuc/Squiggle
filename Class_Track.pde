@@ -36,7 +36,7 @@ class Track {
 
     trackRadials = new ArrayList<TrackRadial>();
     trackLengthB = 120; // number of beats the track length is
-    trackLengthMS = (trackLengthB * (1000 / (BPM / 60)));
+    trackLengthMS = (trackLengthB * (1000f / (BPM / 60f)));
     trackSpacing = maxRadialRadius * 2;
 
     timeStampXValues = new int[trackLengthB];
@@ -221,7 +221,7 @@ class Track {
 
   // method for drawing the position within a track
   void drawTrackPosition() {
-    int trackBeatPos = round((millis() - startOfPlay) / (trackLengthMS / trackLengthB));
+    int trackBeatPos = floor((millis() - startOfPlay) / (trackLengthMS / trackLengthB));
 
     try {
       trackPos = timeStampXValues[trackBeatPos];
@@ -259,5 +259,10 @@ class Track {
     } else {
       return false;
     }
+  }
+  
+  void updateBPM(int bpm) {
+    BPM = bpm;
+    trackLengthMS = (trackLengthB * (1000f / (BPM / 60f)));
   }
 }

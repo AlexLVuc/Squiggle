@@ -42,7 +42,7 @@ class TrackRadial {
     fileType = fileType_;
     curPosX = orgPosX = curPosX_;
     curPosY = orgPosY = curPosY_;
-    filePath = filePath_; //NEED TO CHANGE
+    filePath = filePath_;
     BPM = bpm;
     curRC = curRC_;
     beatPos = beat;
