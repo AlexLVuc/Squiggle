@@ -96,11 +96,12 @@ void printLoadedAudioFileInfo(FilePlayer file) {
  * @param app:        name of G4P window radials is drawn on
  * @param arrayList:  arrayList of soundFile objects of all sound files in a directory
  */
-void makeRadialArray(PApplet app, ArrayList<soundFile> arrayList) {
+void makeRadialArray(PApplet app, ArrayList<soundFile> arrayList, String path) {
   radials = new Radial[arrayList.size()];
+  String radialPath = getPathFromDataFolder(path);
   for (int i = arrayList.size() - 1; i >= 0; i--) {
     soundFile file = arrayList.get(i);
-    radials[i] = new Radial(app, file.name, file.name, file.fileType, (maxRadialRadius * ((2 * i) + 1)) + (radialSpacing * i) + radialAreaBorder, 900);
+    radials[i] = new Radial(app, file.name, file.name, file.fileType, radialPath, (maxRadialRadius * ((2 * i) + 1)) + (radialSpacing * i) + radialAreaBorder, 900);
     arrayList.remove(i);
   }
 }
@@ -176,6 +177,11 @@ void printRadialsData() {
   }
 }
 
+/* method for initializing the elements of the drop down menu by finding all folders within the sound folder
+ *
+ * @param path:       path of folder to start searching from
+ * @param recursion:  number of times recursion has been initiated
+ */
 void initializeFolderSelectValues(String path, int recursion) {
   // get all files within a folder
   File folder = new File(path);
@@ -202,6 +208,12 @@ void initializeFolderSelectValues(String path, int recursion) {
   }
 }
 
+
+/* method that returns the path of the specified folder starting from path
+ *
+ * @param path:    path of folder to start searching from
+ * @param folder:  name of folder you are searching for
+ */
 String findSelectedFolder(String path, String folder) {
   File defaultFolder = new File(path);
   File[] files = defaultFolder.listFiles();  
@@ -223,4 +235,15 @@ String findSelectedFolder(String path, String folder) {
   }
   
   return "";
+}
+
+
+/* method that returns the path starting at the data folder given an absolute path
+ *
+ * @param path:  absolute path
+ */
+String getPathFromDataFolder(String path) {
+  String dataPath = sketchPath() + "/data";
+  int dataPathLength = dataPath.length();
+  return path.substring(dataPathLength) + "\\";
 }

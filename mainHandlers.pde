@@ -150,8 +150,8 @@ public void handleFolderSelectList(GDropList droplist, GEvent event) {
   if (event == GEvent.SELECTED) {
     int temp = droplist.getSelectedText().lastIndexOf('>');
     String folder = droplist.getSelectedText().substring(temp + 1);
-    String path = findSelectedFolder(((mainWinData)mainWindow.data).currentFolder, folder);
-    println(path);
+    String path = findSelectedFolder(sketchPath() + "/data/sounds/", folder);
+    makeRadialArray(mainWindow, findSoundFilesInDirectory(path), path);
   }
 }
 

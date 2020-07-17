@@ -47,10 +47,9 @@ public void mainGUI() {
   ((mainWinData)mainWindow.data).bRadialsLoaded = false;
   ((mainWinData)mainWindow.data).bRadialHandleActive = false;
   ((mainWinData)mainWindow.data).BPM = 120;
-  ((mainWinData)mainWindow.data).currentFolder = sketchPath() + "/data/sounds/";
 
   // make Radial array from the default folder
-  makeRadialArray(mainWindow, findSoundFilesInDirectory(sketchPath() + "/data"));
+  makeRadialArray(mainWindow, findSoundFilesInDirectory(defaultSoundFolder), defaultSoundFolder);
   ((mainWinData)mainWindow.data).bRadialsLoaded = true;
   ((mainWinData)mainWindow.data).lastRadialPosX = radials[radials.length - 1].curPosX;
   
@@ -106,7 +105,7 @@ public void mainGUI() {
   folderSelectList.addEventHandler(this, "handleFolderSelectList");
   folderSelectList.setFont(Baskerville22);
   folderSelectList.setLocalColorScheme(10); // seperate color scheme for this
-  initializeFolderSelectValues(((mainWinData)mainWindow.data).currentFolder, 0);
+  initializeFolderSelectValues(sketchPath() + "/data/sounds/", 0);
 
   // reused label from intro window resized and moved
   squiggle = new GLabel(mainWindow, 138, 32, 414, 88);

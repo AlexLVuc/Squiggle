@@ -49,14 +49,14 @@ class Radial {
    * @param curPosX_:      x position of center of radial
    * @param curPosY_:      y position of center of radial
    */
-  Radial(PApplet app_, String name_, String fileName_, int fileType_, int curPosX_, int curPosY_) {
+  Radial(PApplet app_, String name_, String fileName_, int fileType_, String filePath_, int curPosX_, int curPosY_) {
     app = app_;
     name = name_;
     fileName = fileName_;
     fileType = fileType_;
     curPosX = orgPosX = curPosX_;
     curPosY = orgPosY = curPosY_;
-    filePath = ""; //NEED TO CHANGE
+    filePath = filePath_;
 
     sampleArray = new float[maxArraySize];
     frequencyArray = new int[maxArraySize];
@@ -82,7 +82,7 @@ class Radial {
     // load the correct file type into the player
     if (fileType == MP3) { 
       try {
-        sound = new FilePlayer(radialsMinim.loadFileStream(fileName + ".mp3"));
+        sound = new FilePlayer(radialsMinim.loadFileStream(filePath + fileName + ".mp3"));
         sound.patch(rateControl).patch(audioOut);
       } 
       catch (Exception e) {
@@ -90,7 +90,7 @@ class Radial {
       }
     } else {
       try {
-        sound = new FilePlayer(radialsMinim.loadFileStream(fileName + ".wav"));
+        sound = new FilePlayer(radialsMinim.loadFileStream(filePath + fileName + ".wav"));
         sound.patch(rateControl).patch(audioOut);
       } 
       catch (Exception e) {
@@ -178,9 +178,9 @@ class Radial {
     // load in the audio file as a sample
     AudioSample tempSample;
     if (fileType == MP3) {     
-      tempSample = radialsMinim.loadSample(fileName + ".mp3");
+      tempSample = radialsMinim.loadSample(filePath + fileName + ".mp3");
     } else {
-      tempSample = radialsMinim.loadSample(fileName + ".wav");
+      tempSample = radialsMinim.loadSample(filePath + fileName + ".wav");
     }
 
     // If the file only has a mono track, then you only need one array of values
@@ -225,9 +225,9 @@ class Radial {
     // load in the audio file as a sample
     AudioSample tempSample;
     if (fileType == MP3) {     
-      tempSample = radialsMinim.loadSample(fileName + ".mp3");
+      tempSample = radialsMinim.loadSample(filePath + fileName + ".mp3");
     } else {
-      tempSample = radialsMinim.loadSample(fileName + ".wav");
+      tempSample = radialsMinim.loadSample(filePath + fileName + ".wav");
     }
 
     // If the file only has a mono track, then you only need one array of values

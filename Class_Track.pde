@@ -51,7 +51,7 @@ class Track {
    */
   void addTrackRadial(Radial r) {
     int beat = findClosestBeat(r.curPosX);
-    TrackRadial newTrackRadial = new TrackRadial(r.app, r.name, r.fileName, r.fileType, timeStampXValues[beat - 1], r.curPosY, r.sampleArray, r.frequencyArray, r.BPM, r.curRC, beat);
+    TrackRadial newTrackRadial = new TrackRadial(r.app, r.name, r.fileName, r.fileType, r.filePath, timeStampXValues[beat - 1], r.curPosY, r.sampleArray, r.frequencyArray, r.BPM, r.curRC, beat);
     trackRadials.add(newTrackRadial);
   }
 

@@ -35,14 +35,14 @@ class TrackRadial {
    * @param curPosY_:      y position of center of radial
    * @param others_:    array of other radials in a window to check from drag and drop activity
    */
-  TrackRadial(PApplet app_, String name_, String fileName_, int fileType_, int curPosX_, int curPosY_, float[] samples, int[] frequencies, int bpm, float curRC_, int beat) {
+  TrackRadial(PApplet app_, String name_, String fileName_, int fileType_, String filePath_, int curPosX_, int curPosY_, float[] samples, int[] frequencies, int bpm, float curRC_, int beat) {
     app = app_;
     name = name_;
     fileName = fileName_;
     fileType = fileType_;
     curPosX = orgPosX = curPosX_;
     curPosY = orgPosY = curPosY_;
-    filePath = ""; //NEED TO CHANGE
+    filePath = filePath_; //NEED TO CHANGE
     BPM = bpm;
     curRC = curRC_;
     beatPos = beat;
@@ -64,7 +64,7 @@ class TrackRadial {
     // load the correct file type into the player
     if (fileType == MP3) { 
       try {
-        sound = new FilePlayer(radialsMinim.loadFileStream(fileName + ".mp3"));
+        sound = new FilePlayer(radialsMinim.loadFileStream(filePath + fileName + ".mp3"));
         sound.patch(rateControl).patch(audioOut);
       } 
       catch (Exception e) {
@@ -72,7 +72,7 @@ class TrackRadial {
       }
     } else {
       try {
-        sound = new FilePlayer(radialsMinim.loadFileStream(fileName + ".wav"));
+        sound = new FilePlayer(radialsMinim.loadFileStream(filePath + fileName + ".wav"));
         sound.patch(rateControl).patch(audioOut);
       } 
       catch (Exception e) {

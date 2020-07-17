@@ -38,6 +38,8 @@ int windowWidth, windowHeight;
 int maxRadialRadius = 60;
 int minRadialRadius = 10;
 
+String defaultSoundFolder;
+
 void setup() {
   // set the defualt window insisible
   fullScreen();
@@ -52,6 +54,7 @@ void setup() {
   frameRate(120);
   windowWidth = 1280;
   windowHeight = height - int(height * 0.025f);
+  defaultSoundFolder = sketchPath() + "/data/sounds/Default/";
 
   //Load in logo png from data folder  
   logo = loadImage("data/Squiggle_Logo.png");
@@ -78,5 +81,5 @@ class introWinData extends GWinData {
 class mainWinData extends GWinData {
   boolean bGUILoaded, bCameraOn, bRadialsLoaded, bRadialHandleActive;
   int lastRadialPosX, BPM, lastTrackPosX;
-  String username, currentFolder;
+  String username;
 }
