@@ -54,7 +54,7 @@ void setup() {
   frameRate(120);
   windowWidth = 1280;
   windowHeight = height - int(height * 0.025f);
-  defaultSoundFolder = sketchPath() + "/data/sounds/Default/";
+  defaultSoundFolder = sketchPath() + "/data/sounds/Piano/PiNotes/";
 
   //Load in logo png from data folder  
   logo = loadImage("data/Squiggle_Logo.png");

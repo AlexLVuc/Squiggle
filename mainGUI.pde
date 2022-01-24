@@ -10,6 +10,8 @@ GDropList folderSelectList;
 
 int radialSpacing, radialAreaBorder;
 int trackWindowX, trackWindowY, trackWindowW, trackWindowH;
+int webcamW, webcamH;
+boolean NoCam = false;
 
 // This method initializes all elements of the main screen
 public void mainGUI() {
@@ -24,8 +26,13 @@ public void mainGUI() {
   mainWindow.addData(new mainWinData());
 
   // start camera
-  cam = new Capture(mainWindow, 160, 120);
-  cam.start();
+  try {
+    cam = new Capture(mainWindow, getCamera());
+    cam.start();
+  } catch (Exception e) {
+    println("Exception: " + e + " when trying to start cam");
+    NoCam = true;
+  }
 
   //Load in a sound files wihin a given folder
   radialsMinim = new Minim(mainWindow);
@@ -218,24 +225,24 @@ void mainLoadingGUI(PApplet app, GWinData data) {
 void updateMainCams(PApplet app, GWinData data) {
   mainWinData mainData = (mainWinData)data; 
 
-  if (mainData.bCameraOn) {
+  if (mainData.bCameraOn && NoCam == false) {
     // if the webcam data is available to read, get read
     if (cam.available()) {
       cam.read();
     }
-    app.set(45, 147, cam);
+    app.image(cam, 45, 147, webcamW, webcamH);
   } else {
     // if the webcam is toggled off, turn space black and display the username
     app.fill(50);
-    app.rect(45, 147, cam.width, cam.height);
+    app.rect(45, 147, webcamW, webcamH);
     app.fill(255);
     app.textSize(32);
     app.textAlign(CENTER, CENTER);
     // if the username is larger than 9 characters, display the first 6 and "..."
     if (mainData.username.length() > 9) {
-      app.text(mainData.username.substring(0, 6) + "...", 45 + (cam.width / 2), 147 + (cam.height / 2));
+      app.text(mainData.username.substring(0, 6) + "...", 45 + (webcamW / 2), 147 + (webcamH / 2));
     } else {
-      app.text(mainData.username, 45 + (cam.width / 2), 147 + (cam.height / 2));
+      app.text(mainData.username, 45 + (webcamW / 2), 147 + (webcamH / 2));
     }
   }
 }
@@ -248,4 +255,6 @@ void setMainGUIValues() {
   trackWindowY = 147;
   trackWindowW = windowWidth - trackWindowX;
   trackWindowH = 560;
+  webcamW = 160;
+  webcamH = 120;
 }

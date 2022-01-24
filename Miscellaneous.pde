@@ -217,7 +217,7 @@ void initializeFolderSelectValues(String path, int recursion) {
 String findSelectedFolder(String path, String folder) {
   File defaultFolder = new File(path);
   File[] files = defaultFolder.listFiles();  
-  
+
   // check each file
   for (int i = 0; i < files.length; i++) {
     if (files[i].isDirectory()) {
@@ -233,7 +233,7 @@ String findSelectedFolder(String path, String folder) {
       }
     }
   }
-  
+
   return "";
 }
 
@@ -246,4 +246,42 @@ String getPathFromDataFolder(String path) {
   String dataPath = sketchPath() + "/data";
   int dataPathLength = dataPath.length();
   return path.substring(dataPathLength) + "\\";
+}
+
+String getCamera() {
+  String[] cameras = Capture.list();
+  String cam = "";
+
+  if (cameras.length == 0) {
+    //return "";
+  } else {
+    int sizeIndex, xIndex, fpsIndex;
+    int lowestWidth = 10000;
+    int highestFrameRate = 0;
+    
+    for (int i = 0; i < cameras.length; i++) {
+      
+      // get width and fps of current camera
+      sizeIndex = cameras[i].indexOf("size=") + 5;
+      xIndex = cameras[i].indexOf("x", sizeIndex);
+      fpsIndex = cameras[i].indexOf("fps=") + 4;
+      
+      // initialize values if this is the first time through the loop
+      if (i == 0) {
+        lowestWidth = int(cameras[i].substring(sizeIndex, xIndex));
+        highestFrameRate = int(cameras[i].substring(fpsIndex));
+        cam = cameras[i];
+      }
+      
+      // if width is less or equal and fps is less or equal, make this the cam to use
+      if (int(cameras[i].substring(sizeIndex, xIndex)) <= lowestWidth) {
+        if (int(cameras[i].substring(fpsIndex)) >= highestFrameRate) {
+          cam = cameras[i];
+        }
+      }
+      
+    }
+  }
+  
+  return cam;
 }

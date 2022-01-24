@@ -128,6 +128,7 @@ class Track {
   boolean update(boolean otherActiveHandle) {
     // check if track is playing
     if (bPlaying) {
+      //print("Start time: " + millis()); 
       // check if end of track has been reached
       if ((millis() - startOfPlay) >= trackLengthMS) {
         bPlaying = false;
@@ -143,6 +144,7 @@ class Track {
           }
         }
       }
+      //println("End time: " + millis());
     }
     
     // update all the Radials in the track
